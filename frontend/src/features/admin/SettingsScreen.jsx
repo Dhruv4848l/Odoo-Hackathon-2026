@@ -97,6 +97,9 @@ const SettingsScreen = () => {
       govWeight: 0.3,
       evidenceRequiredForCSR: true,
       evidenceRequiredForCompliance: true,
+      autoEmissionCalc: true,
+      badgeAutoAward: true,
+      complianceOverdueFlag: true,
     });
   };
 
@@ -175,6 +178,27 @@ const SettingsScreen = () => {
             description="Auditors must attach evidence when closing compliance issues"
             name="evidenceRequiredForCompliance"
             value={form.evidenceRequiredForCompliance ?? true}
+            onChange={handleToggle}
+          />
+          <Toggle
+            label="Auto Emission Calculation"
+            description="Automatically calculate emission scores from new carbon transactions"
+            name="autoEmissionCalc"
+            value={form.autoEmissionCalc ?? true}
+            onChange={handleToggle}
+          />
+          <Toggle
+            label="Badge Auto-Award"
+            description="Automatically grant badges when users reach required XP thresholds"
+            name="badgeAutoAward"
+            value={form.badgeAutoAward ?? true}
+            onChange={handleToggle}
+          />
+          <Toggle
+            label="Compliance Overdue Flagging"
+            description="Automatically flag unresolved compliance issues when due date passes"
+            name="complianceOverdueFlag"
+            value={form.complianceOverdueFlag ?? true}
             onChange={handleToggle}
           />
         </div>
