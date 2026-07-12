@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, RadialBarChart, RadialBar
+  Tooltip, ResponsiveContainer, Cell, PieChart, Pie
 } from 'recharts';
 import axiosClient from '../../api/axiosClient';
-import { useSelector } from 'react-redux';
 import EnvironmentalHeader from './EnvironmentalHeader';
+import CarbonTransactionBoard from './CarbonTransactionBoard';
+import EnvironmentalGoalBoard from './EnvironmentalGoalBoard';
 
 const COLORS = ['#1F5C4D', '#2E6DA4', '#C9862A', '#8E3B46', '#4CAF50', '#FF9800'];
 
@@ -28,11 +29,8 @@ const StatCard = ({ label, value, unit, icon, color = 'brand-primary', trend }) 
 );
 
 export default function EnvironmentalDashboard() {
-  const { user } = useSelector((state) => state.auth);
-
   const [transactions, setTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
-  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // overview | transactions | goals
   const [dateRange, setDateRange] = useState('30'); // days
@@ -44,14 +42,12 @@ export default function EnvironmentalDashboard() {
       startDate.setDate(startDate.getDate() - parseInt(dateRange));
       const startStr = startDate.toISOString().split('T')[0];
 
-      const [txRes, goalRes, deptRes] = await Promise.all([
+      const [txRes, goalRes] = await Promise.all([
         axiosClient.get(`/carbon-transactions?startDate=${startStr}`),
         axiosClient.get('/environmental-goals'),
-        axiosClient.get('/departments'),
       ]);
       if (txRes.success) setTransactions(txRes.data);
       if (goalRes.success) setGoals(goalRes.data);
-      if (deptRes.success) setDepartments(deptRes.data);
     } catch (err) {
       console.error('Failed to fetch environmental data', err);
     } finally {
@@ -59,14 +55,13 @@ export default function EnvironmentalDashboard() {
     }
   };
 
-  useEffect(() => { fetchData(); }, [dateRange]);
+  useEffect(() => {
+    fetchData();
+  }, [dateRange]);
 
   // --- Derived Data ---
-
-  // Total emissions
   const totalCarbon = transactions.reduce((sum, tx) => sum + (tx.carbonEmitted || 0), 0);
 
-  // Emissions grouped by day for area chart
   const emissionsByDay = (() => {
     const map = {};
     transactions.forEach(tx => {
@@ -75,10 +70,9 @@ export default function EnvironmentalDashboard() {
     });
     return Object.entries(map)
       .map(([date, carbon]) => ({ date, carbon: parseFloat(carbon.toFixed(2)) }))
-      .slice(-15); // last 15 data points
+      .slice(-15);
   })();
 
-  // Emissions per department for bar chart
   const emissionsByDept = (() => {
     const map = {};
     transactions.forEach(tx => {
@@ -88,7 +82,6 @@ export default function EnvironmentalDashboard() {
     return Object.entries(map).map(([dept, carbon]) => ({ dept, carbon: parseFloat(carbon.toFixed(2)) }));
   })();
 
-  // Emissions by category for pie chart
   const emissionsByCategory = (() => {
     const map = {};
     transactions.forEach(tx => {
@@ -98,15 +91,8 @@ export default function EnvironmentalDashboard() {
     return Object.entries(map).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2)) }));
   })();
 
-  // Goal progress data for radial chart
-  const goalProgressData = goals.map(g => ({
-    name: g.category?.name || 'Goal',
-    progress: g.progressPercent || 0,
-    status: g.status,
-  }));
-
-  const activeGoals = goals.filter(g => g.status === 'Active').length;
-  const achievedGoals = goals.filter(g => g.status === 'Achieved').length;
+  const activeGoals = goals.filter(g => g.progressPercent < 100).length;
+  const achievedGoals = goals.filter(g => g.progressPercent >= 100).length;
 
   if (loading) {
     return (
@@ -118,13 +104,13 @@ export default function EnvironmentalDashboard() {
 
   return (
     <div className="p-6 bg-neutral-bg min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-6">
         <EnvironmentalHeader />
 
-        {/* Header */}
-        <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-md border border-neutral-border/60 gap-4">
+        {/* Dashboard Title Section */}
+        <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-sm border border-neutral-border/60 gap-4">
           <div>
-            <h1 className="text-2xl font-display font-bold text-brand-primary">🌿 Environmental Dashboard</h1>
+            <h1 className="text-xl font-display font-bold text-brand-primary">🌿 Environmental Dashboard</h1>
             <p className="text-sm text-neutral-textMuted mt-1">Real-time carbon emission tracking and goal attainment</p>
           </div>
           <div className="flex items-center gap-3">
@@ -144,7 +130,7 @@ export default function EnvironmentalDashboard() {
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Sub-tabs Selector */}
         <div className="flex bg-neutral-surface p-1 rounded-xl border border-neutral-border/60 shadow-sm">
           {[
             { key: 'overview', label: '📊 Overview' },
@@ -165,7 +151,7 @@ export default function EnvironmentalDashboard() {
           ))}
         </div>
 
-        {/* Overview Tab */}
+        {/* Overview Tab Content */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* KPI Cards */}
@@ -242,105 +228,15 @@ export default function EnvironmentalDashboard() {
           </div>
         )}
 
-        {/* Transactions Tab */}
+        {/* Transactions Tab Content */}
         {activeTab === 'transactions' && (
-          <div className="bg-neutral-surface rounded-xl shadow-md border border-neutral-border/60 overflow-hidden">
-            <div className="px-6 py-4 border-b border-neutral-border/60 flex justify-between items-center">
-              <h3 className="font-bold text-neutral-text">Carbon Transactions</h3>
-              <span className="text-xs text-neutral-textMuted">{transactions.length} records</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-neutral-bg/60">
-                  <tr>
-                    {['Date', 'Factor', 'Activity', 'Carbon (kg CO₂e)', 'Department', 'Logged By'].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-neutral-textMuted uppercase tracking-wider">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-border/40">
-                  {transactions.length === 0 ? (
-                    <tr><td colSpan={6} className="px-4 py-10 text-center text-neutral-textMuted">No transactions in this period. Use the Carbon Log form to add entries.</td></tr>
-                  ) : transactions.map(tx => (
-                    <tr key={tx._id} className="hover:bg-neutral-bg/30 transition-colors">
-                      <td className="px-4 py-3 text-xs text-neutral-textMuted whitespace-nowrap">
-                        {new Date(tx.transactionDate).toLocaleDateString('en-IN')}
-                      </td>
-                      <td className="px-4 py-3 font-medium text-neutral-text">{tx.emissionFactor?.name || '—'}</td>
-                      <td className="px-4 py-3 text-neutral-textMuted text-xs">
-                        {tx.activityValue} {tx.emissionFactor?.unit}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="font-bold font-mono text-brand-primary">{tx.carbonEmitted?.toFixed(3)}</span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 bg-neutral-bg rounded text-xs">{tx.department?.code || '—'}</span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-neutral-textMuted">{tx.user?.username || '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <CarbonTransactionBoard />
         )}
 
-        {/* Goals Tab */}
+        {/* Goals Tab Content */}
         {activeTab === 'goals' && (
-          <div className="space-y-4">
-            {goals.length === 0 ? (
-              <div className="bg-neutral-surface rounded-xl p-12 text-center border border-neutral-border/60 shadow-sm">
-                <div className="text-4xl mb-3">🎯</div>
-                <p className="text-neutral-textMuted text-sm">No environmental goals set yet. Admins and Managers can create reduction targets via the API.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {goals.map(goal => (
-                  <div key={goal._id} className="bg-neutral-surface rounded-xl p-5 shadow-sm border border-neutral-border/60">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h4 className="font-bold text-neutral-text">{goal.category?.name}</h4>
-                        <p className="text-xs text-neutral-textMuted">{goal.department?.name}</p>
-                      </div>
-                      <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                        goal.status === 'Achieved' ? 'bg-green-100 text-green-700' :
-                        goal.status === 'Failed' ? 'bg-red-100 text-red-700' :
-                        'bg-brand-primary/10 text-brand-primary'
-                      }`}>
-                        {goal.status}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="mb-3">
-                      <div className="flex justify-between text-xs text-neutral-textMuted mb-1">
-                        <span>{goal.currentValue?.toFixed(1)} kg CO₂e used</span>
-                        <span>Target: {goal.targetValue} kg</span>
-                      </div>
-                      <div className="w-full bg-neutral-bg rounded-full h-2.5 overflow-hidden">
-                        <div
-                          className={`h-2.5 rounded-full transition-all ${
-                            goal.progressPercent >= 100 ? 'bg-red-500' :
-                            goal.progressPercent >= 75 ? 'bg-amber-500' :
-                            'bg-brand-primary'
-                          }`}
-                          style={{ width: `${Math.min(100, goal.progressPercent || 0)}%` }}
-                        />
-                      </div>
-                      <div className="text-right text-xs font-bold text-brand-primary mt-0.5">{goal.progressPercent || 0}%</div>
-                    </div>
-
-                    <div className="flex justify-between text-xs text-neutral-textMuted">
-                      <span>📅 {new Date(goal.startDate).toLocaleDateString('en-IN')}</span>
-                      <span>→ {new Date(goal.endDate).toLocaleDateString('en-IN')}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <EnvironmentalGoalBoard />
         )}
-
       </div>
     </div>
   );

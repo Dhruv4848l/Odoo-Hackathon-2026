@@ -76,6 +76,7 @@ app.use('/api/categories', require('./src/routes/category.routes'));
 app.use('/api/emission-factors', require('./src/routes/emissionFactor.routes'));
 app.use('/api/carbon-transactions', require('./src/routes/carbonTransaction.routes'));
 app.use('/api/environmental-goals', require('./src/routes/environmentalGoal.routes'));
+app.use('/api/product-esg-profiles', require('./src/routes/productESGProfile.routes'));
 
 // Social & Gamification (Dev B)
 app.use('/api/csr-activities', require('./src/routes/csrActivity.routes'));

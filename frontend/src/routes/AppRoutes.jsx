@@ -16,6 +16,7 @@ import OrgDashboard from '../features/reports/OrgDashboard';
 import EnvironmentalDashboard from '../features/environmental/EnvironmentalDashboard';
 import CarbonEntryForm from '../features/environmental/CarbonEntryForm';
 import EmissionFactorConfig from '../features/environmental/EmissionFactorConfig';
+import ProductESGProfileBoard from '../features/environmental/ProductESGProfileBoard';
 
 // Social & CSR (Dev B)
 import CSRActivityList from '../features/social/CSRActivityList';
@@ -217,6 +218,16 @@ export const AppRoutes = () => {
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
             <AppLayout title="Log Carbon Activity">
               <CarbonEntryForm />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/environmental/products"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+            <AppLayout title="Product ESG Profiles">
+              <ProductESGProfileBoard />
             </AppLayout>
           </PrivateRoute>
         }

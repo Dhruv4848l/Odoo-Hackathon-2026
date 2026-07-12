@@ -8,6 +8,7 @@ export default function EnvironmentalHeader() {
   const links = [
     { to: '/environmental', label: '📊 Dashboard', end: true },
     { to: '/environmental/log', label: '📝 Log Carbon Activity' },
+    { to: '/environmental/products', label: '📦 Product ESG Profiles' },
   ];
 
   // Only show Emission Factors config for Admins

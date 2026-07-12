@@ -280,15 +280,62 @@ async function seedDatabase() {
     await ESGPolicy.insertMany(samplePolicies);
     console.log(`[SEED] Successfully seeded ${samplePolicies.length} ESG policies.`);
 
+    // --- Dev A: Product ESG Profiles ---
+    const ProductESGProfile = require('../src/models/ProductESGProfile');
+    await ProductESGProfile.deleteMany({});
+    const sampleProducts = [
+      { name: 'Eco-friendly Laptop Stand', sku: 'LTP-STD-ECO', carbonFootprint: 12.5, socialScore: 85, governanceScore: 90 },
+      { name: 'Recycled Paper Notepad', sku: 'NTP-REC-PPR', carbonFootprint: 1.2, socialScore: 78, governanceScore: 80 },
+      { name: 'Reusable Bamboo Cup', sku: 'CUP-BMB-REU', carbonFootprint: 3.4, socialScore: 92, governanceScore: 88 },
+    ];
+    await ProductESGProfile.insertMany(sampleProducts);
+    console.log(`[SEED] Successfully seeded ${sampleProducts.length} product ESG profiles.`);
+
     // --- Dev A: Sample Historical Carbon Transactions ---
     const CarbonTransaction = require('../src/models/CarbonTransaction');
     await CarbonTransaction.deleteMany({});
     const gridUK = seededFactors[0];
+    const gridIN = seededFactors[1];
+    const naturalGas = seededFactors[2];
     const diesel = seededFactors[3];
+
     const mfgDept = seededDepts.find(d => d.code === 'MFG');
     const itDept = seededDepts.find(d => d.code === 'IT');
+    const fleetDept = seededDepts.find(d => d.code === 'FLEET');
 
+    // Create transactions that align with the goals in the screenshot
     const sampleTransactions = [
+      // Fleet department goal target: 500, current: 390. FleetTravel category (diesel).
+      {
+        department: fleetDept._id,
+        user: adminUser._id,
+        emissionFactor: diesel._id,
+        activityValue: 390 / diesel.factor, // 145.52 litres
+        carbonEmitted: 390,
+        transactionDate: new Date('2026-05-15'),
+        description: 'Monthly fleet logistics fuel refill',
+      },
+      // Manufacturing goal target: 120, current: 98. Manufacturing Operations category (natural gas).
+      {
+        department: mfgDept._id,
+        user: adminUser._id,
+        emissionFactor: naturalGas._id,
+        activityValue: 98 / naturalGas.factor, // 48.04 cubic metres
+        carbonEmitted: 98,
+        transactionDate: new Date('2026-06-10'),
+        description: 'Facility heating & natural gas consumption',
+      },
+      // Corporate/HR goal target: 80, current: 80. Purchased Electricity category (grid electricity).
+      {
+        department: hrDept._id,
+        user: adminUser._id,
+        emissionFactor: gridIN._id,
+        activityValue: 80 / gridIN.factor, // 112.99 kWh
+        carbonEmitted: 80,
+        transactionDate: new Date('2026-04-01'),
+        description: 'Office LED lighting upgrade electricity baseline',
+      },
+      // Other random transactions
       {
         department: mfgDept._id,
         user: adminUser._id,
@@ -297,15 +344,6 @@ async function seedDatabase() {
         carbonEmitted: 1200 * gridUK.factor,
         transactionDate: new Date(Date.now() - 60 * 24 * 3600 * 1000),
         description: 'Manufacturing facility power usage (2 months ago)',
-      },
-      {
-        department: mfgDept._id,
-        user: adminUser._id,
-        emissionFactor: diesel._id,
-        activityValue: 450,
-        carbonEmitted: 450 * diesel.factor,
-        transactionDate: new Date(Date.now() - 30 * 24 * 3600 * 1000),
-        description: 'Fleet logistics diesel refill (last month)',
       },
       {
         department: itDept._id,
@@ -319,6 +357,41 @@ async function seedDatabase() {
     ];
     await CarbonTransaction.insertMany(sampleTransactions);
     console.log(`[SEED] Successfully seeded ${sampleTransactions.length} historical carbon transactions.`);
+
+    // --- Dev A: Environmental Goals ---
+    const EnvironmentalGoal = require('../src/models/EnvironmentalGoal');
+    await EnvironmentalGoal.deleteMany({});
+    const sampleGoals = [
+      {
+        department: fleetDept._id,
+        category: fleetCat._id,
+        targetValue: 500,
+        currentValue: 390,
+        startDate: new Date('2026-01-01'),
+        endDate: new Date('2026-12-31'),
+        status: 'Active',
+      },
+      {
+        department: mfgDept._id,
+        category: mfgCat._id,
+        targetValue: 120,
+        currentValue: 98,
+        startDate: new Date('2026-01-01'),
+        endDate: new Date('2026-09-30'),
+        status: 'Active',
+      },
+      {
+        department: hrDept._id,
+        category: emissionCat._id,
+        targetValue: 80,
+        currentValue: 80,
+        startDate: new Date('2026-01-01'),
+        endDate: new Date('2026-06-30'),
+        status: 'Achieved',
+      },
+    ];
+    await EnvironmentalGoal.insertMany(sampleGoals);
+    console.log(`[SEED] Successfully seeded ${sampleGoals.length} environmental goals.`);
 
     // --- Dev D: Initial Score Recalculation ---
     const { recalculateDepartmentScore } = require('../src/services/scoring/scoringEngine');

@@ -3,7 +3,7 @@ import axiosClient from '../../api/axiosClient';
 import { useSelector } from 'react-redux';
 import EnvironmentalHeader from './EnvironmentalHeader';
 
-export default function EmissionFactorConfig() {
+export default function EmissionFactorConfig({ isTab = false }) {
   const { user } = useSelector((state) => state.auth);
   const isAdmin = user?.role === 'Admin';
 
@@ -106,9 +106,9 @@ export default function EmissionFactorConfig() {
   };
 
   return (
-    <div className="p-6 bg-neutral-bg min-h-screen">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <EnvironmentalHeader />
+    <div className={isTab ? "" : "p-6 bg-neutral-bg min-h-screen"}>
+      <div className={isTab ? "space-y-6" : "max-w-5xl mx-auto space-y-6"}>
+        {!isTab && <EnvironmentalHeader />}
 
         {/* Header */}
         <div className="flex justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-md border border-neutral-border/60">
