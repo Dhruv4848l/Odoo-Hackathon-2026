@@ -103,9 +103,8 @@ export default function EnvironmentalDashboard() {
   }
 
   return (
-    <div className="p-6 bg-neutral-bg min-h-screen">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <EnvironmentalHeader />
+    <div className="max-w-5xl mx-auto space-y-6">
+      <EnvironmentalHeader />
 
         {/* Dashboard Title Section */}
         <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-sm border border-neutral-border/60 gap-4">
@@ -237,7 +236,6 @@ export default function EnvironmentalDashboard() {
         {activeTab === 'goals' && (
           <EnvironmentalGoalBoard />
         )}
-      </div>
     </div>
   );
 }

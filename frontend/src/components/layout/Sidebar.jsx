@@ -49,7 +49,7 @@ const Sidebar = () => {
     <aside
       className={`flex flex-col bg-neutral-text text-white transition-all duration-300 ${
         collapsed ? 'w-16' : 'w-60'
-      } min-h-screen`}
+      } h-full`}
       style={{ background: '#1a2e26' }}
     >
       {/* Logo */}

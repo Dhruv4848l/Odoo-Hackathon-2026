@@ -168,8 +168,7 @@ export default function DepartmentCategoryManager() {
   };
 
   return (
-    <div className="p-6 bg-neutral-bg min-h-screen">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Title Header */}
         <div className="flex justify-between items-center bg-neutral-surface p-6 rounded-lg shadow-md border border-neutral-border">
@@ -498,7 +497,6 @@ export default function DepartmentCategoryManager() {
 
         </div>
 
-      </div>
     </div>
   );
 }

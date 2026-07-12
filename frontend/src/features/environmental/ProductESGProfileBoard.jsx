@@ -125,9 +125,8 @@ export default function ProductESGProfileBoard() {
     : null;
 
   return (
-    <div className="p-6 bg-neutral-bg min-h-screen">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <EnvironmentalHeader />
+    <div className="max-w-5xl mx-auto space-y-6">
+      <EnvironmentalHeader />
 
         {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -366,6 +365,5 @@ export default function ProductESGProfileBoard() {
         </div>
       )}
     </div>
-  </div>
-);
+  );
 }
