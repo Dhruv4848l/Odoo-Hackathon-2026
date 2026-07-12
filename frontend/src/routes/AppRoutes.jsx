@@ -1,28 +1,43 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+// Layout
+import AppLayout from '../components/layout/AppLayout';
+
+// Auth
 import LoginPage from '../features/auth/LoginPage';
-import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
+
+// Dashboard / Overview (Dev A & D)
+import MainDashboard from '../features/dashboard/MainDashboard';
+import OrgDashboard from '../features/reports/OrgDashboard';
+
+// Environmental (Dev A)
+import EnvironmentalDashboard from '../features/environmental/EnvironmentalDashboard';
+import CarbonEntryForm from '../features/environmental/CarbonEntryForm';
+import EmissionFactorConfig from '../features/environmental/EmissionFactorConfig';
+
+// Social & CSR (Dev B)
 import CSRActivityList from '../features/social/CSRActivityList';
 import ChallengeBoard from '../features/social/ChallengeBoard';
 import RewardCatalog from '../features/social/RewardCatalog';
 import Leaderboard from '../features/social/Leaderboard';
 import ApprovalQueue from '../features/social/ApprovalQueue';
 
-// Dev D screens
-import OrgDashboard from '../features/reports/OrgDashboard';
+// Governance (Dev C)
+import PolicyList from '../features/governance/PolicyList';
+import AcknowledgementTracker from '../features/governance/AcknowledgementTracker';
+import ComplianceKanban from '../features/governance/ComplianceKanban';
+
+// Admin / Settings (Dev A & D)
+import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
+import SettingsScreen from '../features/admin/SettingsScreen';
+
+// Reports (Dev D)
 import FixedReports from '../features/reports/FixedReports';
 import CustomReportBuilder from '../features/reports/CustomReportBuilder';
-import SettingsScreen from '../features/admin/SettingsScreen';
-import AppLayout from '../components/layout/AppLayout';
 
-const EnvironmentalDashboard = () => (
-  <AppLayout title="Environmental">
-    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
-      🔋 Environmental Dashboard — Dev A module coming soon
-    </div>
-  </AppLayout>
-);
+// ─── Social Dashboard (Dev B tabbed container wrapper) ────────────────────────
 
 const SocialDashboard = () => {
   const { user } = useSelector((state) => state.auth);
@@ -68,47 +83,43 @@ const SocialDashboard = () => {
   );
 };
 
-const GovernanceDashboard = () => (
-  <AppLayout title="Governance">
-    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
-      ⚖️ Governance & Compliance — Dev C module coming soon
-    </div>
-  </AppLayout>
-);
+// ─── Reports Page wrapper with internal navigation tabs ────────────────────────
 
-// Reports sub-nav wrapper
 const ReportsPage = () => {
   const tabs = [
     { to: '/reports/overview', label: 'Fixed Reports' },
     { to: '/reports/custom', label: 'Custom Builder' },
   ];
   return (
-    <div>
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-6 ml-6 mt-4">
-        {tabs.map(({ to, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                isActive ? 'bg-white shadow-sm text-brand-primary' : 'text-gray-500 hover:text-neutral-text'
-              }`
-            }
-          >
-            {label}
-          </NavLink>
-        ))}
+    <AppLayout title="Reports & Analytics">
+      <div>
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-6">
+          {tabs.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  isActive ? 'bg-white shadow-sm text-brand-primary' : 'text-gray-500 hover:text-neutral-text'
+                }`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
+        </div>
+        <Routes>
+          <Route path="overview" element={<FixedReports />} />
+          <Route path="custom" element={<CustomReportBuilder />} />
+          <Route index element={<Navigate to="overview" replace />} />
+        </Routes>
       </div>
-      <Routes>
-        <Route path="overview" element={<FixedReports />} />
-        <Route path="custom" element={<CustomReportBuilder />} />
-        <Route index element={<Navigate to="overview" replace />} />
-      </Routes>
-    </div>
+    </AppLayout>
   );
 };
 
-// Guard Component for Private Routes
+// ─── Route guard for private/authenticated sessions ───────────────────────────
+
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
@@ -123,11 +134,20 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
+// Smart landing redirect: login if unauthenticated, dashboard if authenticated
+const RootRedirect = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+};
+
+// ─── Main App Routes Configuration ────────────────────────────────────────────
+
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
+      {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<RootRedirect />} />
 
       {/* Dev D — Org Dashboard */}
       <Route
@@ -139,17 +159,39 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* Dev A — Environmental */}
+      {/* Dev A — Environmental Dashboard & Logger */}
       <Route
         path="/environmental"
         element={
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
-            <EnvironmentalDashboard />
+            <AppLayout title="Environmental Dashboard">
+              <EnvironmentalDashboard />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/environmental/log"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+            <AppLayout title="Log Carbon Activity">
+              <CarbonEntryForm />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/environmental/factors"
+        element={
+          <PrivateRoute allowedRoles={['Admin']}>
+            <AppLayout title="Emission Factors">
+              <EmissionFactorConfig />
+            </AppLayout>
           </PrivateRoute>
         }
       />
 
-      {/* Dev B — Social */}
+      {/* Dev B — Social & CSR (Tabbed view) */}
       <Route
         path="/social"
         element={
@@ -159,25 +201,43 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* Dev C — Governance */}
+      {/* Dev C — Governance & Compliance */}
       <Route
-        path="/governance"
+        path="/governance/policies"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee', 'Auditor']}>
+            <AppLayout title="Compliance Policies">
+              <PolicyList />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/governance/tracker"
         element={
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
-            <GovernanceDashboard />
+            <AppLayout title="Acknowledgement Tracker">
+              <AcknowledgementTracker />
+            </AppLayout>
           </PrivateRoute>
         }
       />
       <Route
-        path="/admin"
+        path="/governance/kanban"
         element={
-          <PrivateRoute allowedRoles={['Admin']}>
-            <DepartmentCategoryManager />
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
+            <AppLayout title="Compliance Kanban">
+              <ComplianceKanban />
+            </AppLayout>
           </PrivateRoute>
         }
       />
+      <Route
+        path="/governance"
+        element={<Navigate to="/governance/policies" replace />}
+      />
 
-      {/* Dev D — Reports */}
+      {/* Dev D — Reports and Analytics (custom sub-router) */}
       <Route
         path="/reports/*"
         element={
@@ -187,21 +247,34 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* Dev D — Settings (Admin only) */}
+      {/* Dev D — Settings Screen */}
       <Route
         path="/settings"
         element={
           <PrivateRoute allowedRoles={['Admin']}>
-            <SettingsScreen />
+            <AppLayout title="Settings">
+              <SettingsScreen />
+            </AppLayout>
           </PrivateRoute>
         }
       />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Dev A — Department & Category Admin Management */}
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute allowedRoles={['Admin']}>
+            <AppLayout title="Admin Management">
+              <DepartmentCategoryManager />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+
+      {/* Fallback Catch-all Route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
 
 export default AppRoutes;
-

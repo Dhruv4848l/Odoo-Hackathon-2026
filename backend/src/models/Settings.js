@@ -6,9 +6,10 @@ const SettingsSchema = new mongoose.Schema({
   govWeight: { type: Number, default: 0.3 }, // Default Gov: 30%
   evidenceRequiredForCSR: { type: Boolean, default: true },
   evidenceRequiredForCompliance: { type: Boolean, default: true },
-  autoEmissionCalc: { type: Boolean, default: true },
+  autoEmissionCalc: { type: Boolean, default: true }, // If true, carbonEmitted = activityValue * factor.factor
   badgeAutoAward: { type: Boolean, default: true },
   complianceOverdueFlag: { type: Boolean, default: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Settings', SettingsSchema);
+

@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const carbonTransactionController = require('../controllers/carbonTransaction.controller');
+const protect = require('../middleware/auth.middleware');
+const authorize = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from carbonTransaction' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from carbonTransaction' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in carbonTransaction' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in carbonTransaction' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in carbonTransaction' }),
-};
-
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// All routes require authentication
+router.get('/', protect, carbonTransactionController.getCarbonTransactions);
+router.get('/:id', protect, carbonTransactionController.getCarbonTransactionById);
+router.post('/', protect, carbonTransactionController.createCarbonTransaction);
+router.put('/:id', protect, carbonTransactionController.updateCarbonTransaction);
+router.delete('/:id', protect, authorize(['Admin', 'Manager']), carbonTransactionController.deleteCarbonTransaction);
 
 module.exports = router;

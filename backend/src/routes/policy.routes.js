@@ -1,19 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const policyController = require('../controllers/policy.controller');
+const auth = require('../middleware/auth.middleware');
+const role = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from policy' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from policy' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in policy' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in policy' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in policy' }),
-};
+// Public/General employee routes (requires login)
+router.get('/', auth, policyController.getAllPolicies);
+router.get('/:id', auth, policyController.getPolicyById);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Admin/Manager only routes
+router.post('/', auth, role(['Admin', 'Manager']), policyController.createPolicy);
+router.put('/:id', auth, role(['Admin', 'Manager']), policyController.updatePolicy);
+router.delete('/:id', auth, role(['Admin', 'Manager']), policyController.deletePolicy);
 
 module.exports = router;

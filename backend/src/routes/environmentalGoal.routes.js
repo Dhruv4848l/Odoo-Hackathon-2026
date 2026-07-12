@@ -1,19 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const environmentalGoalController = require('../controllers/environmentalGoal.controller');
+const protect = require('../middleware/auth.middleware');
+const authorize = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from environmentalGoal' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from environmentalGoal' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in environmentalGoal' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in environmentalGoal' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in environmentalGoal' }),
-};
+// All routes require authentication
+router.get('/', protect, environmentalGoalController.getEnvironmentalGoals);
+router.get('/:id', protect, environmentalGoalController.getEnvironmentalGoalById);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Admin and Manager can create and update goals
+router.post('/', protect, authorize(['Admin', 'Manager']), environmentalGoalController.createEnvironmentalGoal);
+router.put('/:id', protect, authorize(['Admin', 'Manager']), environmentalGoalController.updateEnvironmentalGoal);
+
+// Only Admin can delete
+router.delete('/:id', protect, authorize(['Admin']), environmentalGoalController.deleteEnvironmentalGoal);
 
 module.exports = router;

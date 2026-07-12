@@ -5,9 +5,13 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
+// Dev A models
 const Department = require('../src/models/Department');
 const Category = require('../src/models/Category');
 const User = require('../src/models/User');
+const EmissionFactor = require('../src/models/EmissionFactor');
+
+// Dev B models
 const Badge = require('../src/models/Badge');
 const Challenge = require('../src/models/Challenge');
 const Reward = require('../src/models/Reward');
@@ -26,7 +30,7 @@ const categories = [
   { name: 'Manufacturing Operations', type: 'Emission', description: 'Scope 1 direct production emissions' },
   { name: 'Business Expenses', type: 'Emission', description: 'Scope 3 corporate expenses & purchasing' },
   { name: 'Fleet Travel', type: 'Emission', description: 'Scope 1 fuel combusted from fleet' },
-  
+
   // Social CSR Categories
   { name: 'Eco-Volunteering', type: 'Social', description: 'Tree planting, cleanups, community action' },
   { name: 'Health & Wellness', type: 'Social', description: 'Corporate physical and mental wellbeing initiatives' },
@@ -109,6 +113,7 @@ async function seedDatabase() {
     await Department.deleteMany({});
     await Category.deleteMany({});
     await User.deleteMany({});
+    await EmissionFactor.deleteMany({});
     await Badge.deleteMany({});
     await Challenge.deleteMany({});
     await Reward.deleteMany({});
@@ -121,6 +126,25 @@ async function seedDatabase() {
     const seededCategories = await Category.insertMany(categories);
     console.log(`[SEED] Successfully seeded ${seededCategories.length} categories.`);
 
+    // --- Dev A: Emission Factors ---
+    console.log('[SEED] Seeding Emission Factors...');
+    const emissionCat = seededCategories.find(c => c.name === 'Purchased Electricity');
+    const mfgCat = seededCategories.find(c => c.name === 'Manufacturing Operations');
+    const fleetCat = seededCategories.find(c => c.name === 'Fleet Travel');
+    const bizCat = seededCategories.find(c => c.name === 'Business Expenses');
+
+    const emissionFactors = [
+      { name: 'Grid Electricity (UK)', category: emissionCat._id, factor: 0.233, unit: 'kWh', source: 'DEFRA 2023' },
+      { name: 'Grid Electricity (IN)', category: emissionCat._id, factor: 0.708, unit: 'kWh', source: 'CEA India 2022' },
+      { name: 'Natural Gas Combustion', category: mfgCat._id, factor: 2.04, unit: 'cubic metre', source: 'IPCC AR6' },
+      { name: 'Diesel Vehicle', category: fleetCat._id, factor: 2.68, unit: 'litre', source: 'DEFRA 2023' },
+      { name: 'Petrol Vehicle', category: fleetCat._id, factor: 2.31, unit: 'litre', source: 'DEFRA 2023' },
+      { name: 'Air Travel (Short Haul)', category: bizCat._id, factor: 0.255, unit: 'km', source: 'DEFRA 2023' },
+    ];
+    const seededFactors = await EmissionFactor.insertMany(emissionFactors);
+    console.log(`[SEED] Successfully seeded ${seededFactors.length} emission factors.`);
+
+    // --- Admin User ---
     console.log('[SEED] Seeding Admin User...');
     const hrDept = seededDepts.find(d => d.code === 'HR');
     const adminUser = await User.create({
@@ -132,15 +156,17 @@ async function seedDatabase() {
     });
     console.log(`[SEED] Seeded Admin user: ${adminUser.username} (${adminUser.email})`);
 
+    // --- Dev B: Badges ---
     console.log('[SEED] Seeding Badges...');
     const seededBadges = await Badge.insertMany(defaultBadges);
     console.log(`[SEED] Successfully seeded ${seededBadges.length} badges.`);
 
+    // --- Dev B: Rewards ---
     console.log('[SEED] Seeding Rewards...');
     const seededRewards = await Reward.insertMany(defaultRewards);
     console.log(`[SEED] Successfully seeded ${seededRewards.length} rewards.`);
 
-    // Find the Eco-Volunteering category to link default challenges
+    // --- Dev B: Challenges ---
     const ecoVolunteeringCat = seededCategories.find(c => c.name === 'Eco-Volunteering');
     const skillDevCat = seededCategories.find(c => c.name === 'Skill & Development');
 
@@ -153,7 +179,7 @@ async function seedDatabase() {
           xp: 150,
           difficulty: 'Medium',
           evidence_required: true,
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
+          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
           status: 'Active'
         },
         {
@@ -163,7 +189,7 @@ async function seedDatabase() {
           xp: 100,
           difficulty: 'Easy',
           evidence_required: true,
-          deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+          deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           status: 'Active'
         },
         {
@@ -173,7 +199,7 @@ async function seedDatabase() {
           xp: 50,
           difficulty: 'Easy',
           evidence_required: false,
-          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+          deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           status: 'Active'
         }
       ];
@@ -192,4 +218,3 @@ async function seedDatabase() {
 }
 
 seedDatabase();
-

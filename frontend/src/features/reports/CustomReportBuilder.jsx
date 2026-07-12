@@ -45,18 +45,17 @@ const CustomReportBuilder = () => {
   };
 
   return (
-    <AppLayout title="Custom Report Builder">
-      <div className="max-w-2xl space-y-6">
-        <p className="text-sm text-gray-500">
-          Build a custom report by selecting filters below, then export as CSV or Excel.
-        </p>
+    <div className="max-w-2xl space-y-6">
+      <p className="text-sm text-gray-500">
+        Build a custom report by selecting filters below, then export as CSV or Excel.
+      </p>
 
-        {/* Filter Panel */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-5">
-          <div className="flex items-center gap-2 mb-2">
-            <Filter size={16} className="text-brand-primary" />
-            <h2 className="text-base font-display font-semibold text-neutral-text">Report Filters</h2>
-          </div>
+      {/* Filter Panel */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-5">
+        <div className="flex items-center gap-2 mb-2">
+          <Filter size={16} className="text-brand-primary" />
+          <h2 className="text-base font-display font-semibold text-neutral-text">Report Filters</h2>
+        </div>
 
           {/* Module selector */}
           <div>
@@ -177,34 +176,87 @@ const CustomReportBuilder = () => {
               ))}
             </div>
           </div>
+          </div>
         </div>
 
-        {/* Summary preview */}
-        <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-sm text-green-800">
-          <p className="font-medium mb-1">Export Preview</p>
-          <p>
-            Module: <strong>{filters.module}</strong> &nbsp;|&nbsp; Format:{' '}
-            <strong>{filters.format}</strong>
-            {filters.dateFrom && ` | From: ${filters.dateFrom}`}
-            {filters.dateTo && ` → ${filters.dateTo}`}
-          </p>
+        {/* Date Range */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">From</label>
+            <input
+              type="date"
+              name="dateFrom"
+              value={filters.dateFrom}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">To</label>
+            <input
+              type="date"
+              name="dateTo"
+              value={filters.dateTo}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
         </div>
 
-        {/* Export button */}
-        <button
-          onClick={handleExport}
-          disabled={exporting}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-green-800 transition-all disabled:opacity-60 shadow-md"
-        >
-          {exporting ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Download size={16} />
-          )}
-          {exporting ? 'Generating Report…' : 'Generate & Download Report'}
-        </button>
+        {/* Format selector */}
+        <div>
+          <label className="block text-sm font-medium text-neutral-text mb-1">Export Format</label>
+          <div className="flex gap-3">
+            {FORMATS.map((f) => (
+              <label
+                key={f}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
+                  filters.format === f
+                    ? 'bg-brand-primary text-white border-brand-primary'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="format"
+                  value={f}
+                  checked={filters.format === f}
+                  onChange={handleChange}
+                  className="hidden"
+                />
+                {f === 'CSV' ? <FileText size={14} /> : <FileSpreadsheet size={14} />}
+                {f}
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
-    </AppLayout>
+
+      {/* Summary preview */}
+      <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-sm text-green-800">
+        <p className="font-medium mb-1">Export Preview</p>
+        <p>
+          Module: <strong>{filters.module}</strong> &nbsp;|&nbsp; Format:{' '}
+          <strong>{filters.format}</strong>
+          {filters.dateFrom && ` | From: ${filters.dateFrom}`}
+          {filters.dateTo && ` → ${filters.dateTo}`}
+        </p>
+      </div>
+
+      {/* Export button */}
+      <button
+        onClick={handleExport}
+        disabled={exporting}
+        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-primary text-white font-semibold text-sm hover:bg-green-800 transition-all disabled:opacity-60 shadow-md"
+      >
+        {exporting ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <Download size={16} />
+        )}
+        {exporting ? 'Generating Report…' : 'Generate & Download Report'}
+      </button>
+    </div>
   );
 };
 

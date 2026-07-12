@@ -1,19 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const emissionFactorController = require('../controllers/emissionFactor.controller');
+const protect = require('../middleware/auth.middleware');
+const authorize = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from emissionFactor' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from emissionFactor' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in emissionFactor' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in emissionFactor' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in emissionFactor' }),
-};
+// Public – read emission factors (needed for frontend dropdowns)
+router.get('/', protect, emissionFactorController.getEmissionFactors);
+router.get('/:id', protect, emissionFactorController.getEmissionFactorById);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Admin only – manage emission factor library
+router.post('/', protect, authorize(['Admin']), emissionFactorController.createEmissionFactor);
+router.put('/:id', protect, authorize(['Admin']), emissionFactorController.updateEmissionFactor);
+router.delete('/:id', protect, authorize(['Admin']), emissionFactorController.deleteEmissionFactor);
 
 module.exports = router;
