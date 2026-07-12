@@ -45,12 +45,12 @@ const FixedReports = () => {
     const key = `${type}-${format}`;
     setExporting(key);
     try {
-      const blob = await scoringApi.exportReport({ type: format });
+      const blob = await scoringApi.exportReport({ module: type, type: format });
       // axiosClient returns response.data directly (already the blob due to responseType)
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `ESG_Report.${format === 'Excel' ? 'xlsx' : 'csv'}`);
+      link.setAttribute('download', `ESG_${type}_Report.${format === 'Excel' ? 'xlsx' : format.toLowerCase()}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -83,7 +83,7 @@ const FixedReports = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              {['CSV', 'Excel'].map((fmt) => {
+              {['CSV', 'Excel', 'PDF'].map((fmt) => {
                 const key = `${id}-${fmt}`;
                 const loading = exporting === key;
                 return (

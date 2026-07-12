@@ -11,3 +11,4 @@ export const exportReport = (data) =>
     responseType: 'blob', // needed for file downloads
   });
 
+export const getLeaderboard = () => axiosClient.get('/leaderboard');
