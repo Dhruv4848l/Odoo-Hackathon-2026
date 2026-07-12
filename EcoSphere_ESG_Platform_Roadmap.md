@@ -1,10 +1,14 @@
+> [!IMPORTANT]
+> **TECH STACK OVERRIDE:** This roadmap recommends a MySQL/SQL setup. The team has shifted to **MongoDB Atlas** (using Mongoose ODM) for the implementation layer. 
+> Refer to [AI_CONTEXT.md](file:///c:/ODOO-ECOSPHERE/Odoo-Hackathon-2026/AI_CONTEXT.md) for the active stack specification, database schemas, and parallel developer database isolation rules.
+
 **🌿 ECOSPHERE**
 
 **ESG MANAGEMENT PLATFORM**
 
 _Full Build Roadmap, ER Diagram & Technical Blueprint_
 
-MERN + MySQL • 4-Developer Parallel Build • 8-Hour Sprint
+MERN + MongoDB Atlas • 4-Developer Parallel Build • 8-Hour Sprint
 
 **Environmental · Social · Governance · Gamification**
 

@@ -28,7 +28,7 @@ The original roadmap doc recommends MySQL + Prisma/Sequelize. **We are using Mon
 
 | Roadmap doc says | We actually do |
 |---|---|
-| MySQL 8 | **MongoDB** (local `mongod` or Docker) |
+| MySQL 8 | **MongoDB Atlas** (Cloud Database) |
 | Prisma / Sequelize | **Mongoose** (ODM, schema-first models) |
 | `schema.prisma` as shared source of truth | **`backend/src/models/*.js`** Mongoose schemas are the shared source of truth |
 | `prisma migrate dev` | No migrations — Mongoose schemas are applied at runtime; use a `seed.js` script for consistent demo data (same idea as before, different mechanism) |
@@ -67,14 +67,14 @@ We're 4 devs, each owning a **full vertical slice** (models → routes → React
 |---|---|---|
 | Frontend | React (Vite) + Tailwind CSS + Redux Toolkit / React Query | Fast HMR, utility CSS, simplified API state |
 | Backend | Node.js + Express | Split into per-module route files |
-| Database | **MongoDB** (local `mongod` or Docker) | See stack-change note above |
+| Database | **MongoDB Atlas** (Cloud Database) | See stack-change note above |
 | ODM | **Mongoose** | Schema-first models = shared source of truth |
 | Auth | JWT + bcrypt, role middleware (Admin/Manager/Employee/Auditor) | Stateless |
 | Realtime | Socket.io | Live leaderboard & notification badges |
 | File uploads | Multer (local disk for demo; shared folder if devs split machines) | CSR/Challenge proof files |
 | Charts | Recharts or Chart.js | Env/Social/Gov dashboards |
 | PDF/Excel/CSV export | Puppeteer (PDF) + ExcelJS (Excel) + json2csv (CSV) | Custom Report Builder |
-| Dev environment | Docker Compose (one MongoDB container, one `mongo-express` container for a GUI if useful) | Same DB for all 4 devs locally |
+| Dev environment | MongoDB Atlas Connection (No Docker needed for database) | Connect using shared/isolated Atlas clusters. See Section 7. |
 | Scheduled jobs | `node-cron` | Overdue compliance flags, optional periodic score recompute |
 
 ---
@@ -87,7 +87,7 @@ ecosphere/
 │   ├── EcoSphere_ESG_Platform_Roadmap.md      # original full spec (features, formulas, timeline, DoD)
 │   └── AI_CONTEXT.md                          # this file
 │
-├── docker-compose.yml                          # MongoDB (+ optional mongo-express)
+├── [Deprecated] docker-compose.yml             # MongoDB (No longer needed, using Atlas)
 ├── .env.example                                # shared env template
 ├── .gitignore
 ├── README.md
@@ -265,9 +265,17 @@ ecosphere/
 - One shared GitHub repo, `main` protected. Branches: `feature/environmental`, `feature/social`, `feature/governance`, `feature/scoring-reports`.
 - Mongoose schemas in `backend/src/models/` are the first thing agreed in the kickoff 15 minutes — everyone reviews before splitting off, since these are the single most important shared artifact (same principle as the roadmap's Prisma-schema-first approach, just Mongoose now).
 - Merge to `main` at 3 fixed checkpoints (~hour 3, ~5.5, ~7), not continuously.
-- `docker-compose.yml` (MongoDB) + `.env.example` checked into the repo so every laptop connects identically — run `docker compose up -d` and you have a local Mongo instance.
-- `backend/seed/seed.js` populates consistent demo data (departments, employees, emission factors, etc.) on every machine.
-- For the final demo: pick one laptop as the "demo host"; others either present against that machine's DB over LAN, or do a final `git pull` + fresh `docker compose up` + `seed` on the host 15 minutes before demo time.
+- **No Docker Required for DB:** We are using **MongoDB Atlas** (Cloud Database) instead of local Docker. Developers connect directly using a `MONGODB_URI` connection string in their `.env` file.
+- **Preventing Dev Conflicts & Database Isolation (Crucial):**
+  - To avoid developers overwriting each other's test data during local development, use **isolated database namespaces** inside the connection string.
+  - In your local `.env`, append your dev identifier to the database name in the URI:
+    - Dev A: `mongodb+srv://<user>:<password>@cluster.mongodb.net/ecosphere-dev-a?retryWrites=true&w=majority`
+    - Dev B: `mongodb+srv://<user>:<password>@cluster.mongodb.net/ecosphere-dev-b?retryWrites=true&w=majority`
+    - Dev C: `mongodb+srv://<user>:<password>@cluster.mongodb.net/ecosphere-dev-c?retryWrites=true&w=majority`
+    - Dev D: `mongodb+srv://<user>:<password>@cluster.mongodb.net/ecosphere-dev-d?retryWrites=true&w=majority`
+  - This ensures each dev has their own sandbox and seed data runs independently.
+- **Seeding Data:** Run the seeding script locally (`node backend/seed/seed.js`) to populate your specific dev database namespace on Atlas with consistent default data (departments, employees, emission factors, etc.).
+- **Integration & Demo:** For integration testing and the final demo, all devs will configure their `.env` to point to the shared `ecosphere-integration` (or `ecosphere-demo`) database. Ensure a final clean seed (`node backend/seed/seed.js`) is run against this namespace before the demo.
 
 ---
 
