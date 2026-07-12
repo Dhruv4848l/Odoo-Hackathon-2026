@@ -506,6 +506,94 @@ async function seedDatabase() {
     await EnvironmentalGoal.insertMany(sampleGoals);
     console.log(`[SEED] Successfully seeded ${sampleGoals.length} environmental goals.`);
 
+    // --- Dev C: Governance Audits, Compliance Issues, and Acknowledgements ---
+    console.log('[SEED] Seeding Governance data...');
+    const Audit = require('../src/models/Audit');
+    const ComplianceIssue = require('../src/models/ComplianceIssue');
+    const PolicyAcknowledgement = require('../src/models/PolicyAcknowledgement');
+
+    await Audit.deleteMany({});
+    await ComplianceIssue.deleteMany({});
+    await PolicyAcknowledgement.deleteMany({});
+
+    // Seed Policy Acknowledgement
+    const seededPoliciesList = await ESGPolicy.find({});
+    if (seededPoliciesList.length > 0) {
+      await PolicyAcknowledgement.create({
+        user: adminUser._id,
+        policy: seededPoliciesList[0]._id,
+        signature: 'Admin User',
+        acknowledgedDate: new Date(),
+      });
+      console.log('[SEED] Seeded policy acknowledgement for Admin User.');
+    }
+
+    // Seed Audits
+    const sampleAudits = [
+      {
+        title: 'Annual Scope 1 & 2 Emissions Audit',
+        auditor: adminUser._id,
+        department: mfgDept._id,
+        auditDate: new Date(Date.now() - 5 * 24 * 3600 * 1000),
+        score: 88,
+        status: 'Completed',
+        findings: 'Manufacturing facilities show compliant natural gas usage but high peak electricity draws. Recommended solar options.',
+      },
+      {
+        title: 'Q2 Workplace Safety & Diversity Review',
+        auditor: adminUser._id,
+        department: hrDept._id,
+        auditDate: new Date(Date.now() + 10 * 24 * 3600 * 1000),
+        status: 'Scheduled',
+      },
+      {
+        title: 'Logistics Fleet Vehicle Emissions Audit',
+        auditor: adminUser._id,
+        department: fleetDept._id,
+        auditDate: new Date(Date.now() - 15 * 24 * 3600 * 1000),
+        score: 74,
+        status: 'Completed',
+        findings: 'High diesel emissions logged. Recommend fleet transition to EVs.',
+      },
+    ];
+    await Audit.insertMany(sampleAudits);
+    console.log(`[SEED] Successfully seeded ${sampleAudits.length} audits.`);
+
+    // Seed Compliance Issues
+    const sampleIssues = [
+      {
+        title: 'Coolant Gas Leak in HVAC unit',
+        description: 'Auditors flagged coolant pressure drop in Logistics main warehouse. Needs immediate repair to avoid fugitive Scope 1 release.',
+        department: fleetDept._id,
+        severity: 'Critical',
+        owner: adminUser._id,
+        dueDate: new Date(Date.now() + 3 * 24 * 3600 * 1000),
+        status: 'Open',
+      },
+      {
+        title: 'Missing Green Supply Chain Certificates',
+        description: 'Vendor documents are incomplete for the newly onboarded logistics supplier. Compliance require certificate verification.',
+        department: fleetDept._id,
+        severity: 'Medium',
+        owner: adminUser._id,
+        dueDate: new Date(Date.now() + 14 * 24 * 3600 * 1000),
+        status: 'InProgress',
+      },
+      {
+        title: 'Workplace Air Quality Inspection Deficit',
+        description: 'Scheduled carbon monoxide monitor calibration was delayed. Resolved by hiring vendor to run tests.',
+        department: mfgDept._id,
+        severity: 'High',
+        owner: adminUser._id,
+        dueDate: new Date(Date.now() - 2 * 24 * 3600 * 1000),
+        status: 'Resolved',
+        resolvedDate: new Date(),
+        evidenceUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158',
+      },
+    ];
+    await ComplianceIssue.insertMany(sampleIssues);
+    console.log(`[SEED] Successfully seeded ${sampleIssues.length} compliance issues.`);
+
     // --- Dev D: Initial Score Recalculation ---
     const { recalculateDepartmentScore } = require('../src/services/scoring/scoringEngine');
     for (const d of seededDepts) {
