@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 
 const BadgeSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  code: { type: String, required: true, unique: true, uppercase: true }, // e.g., 'CARBON_SAVER'
   description: { type: String, required: true },
-  iconUrl: { type: String },
-  criteria: { type: String }, // text description of auto-award criteria
+  // JSON unlock rule: { type: 'xp', value: 1000 } or { type: 'csr_count', value: 5 }
+  unlock_rule: {
+    type: { type: String, enum: ['xp', 'csr_count', 'challenge_count', 'points'], required: true },
+    value: { type: Number, required: true },
+  },
+  icon: { type: String }, // URL or filename
 }, { timestamps: true });
 
 module.exports = mongoose.model('Badge', BadgeSchema);

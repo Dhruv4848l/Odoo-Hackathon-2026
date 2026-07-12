@@ -1,11 +1,13 @@
 import axiosClient from './axiosClient';
 
-export const scoringApi = {
-  getData: () => axiosClient.get(`/scoring`),
-  getById: (id) => axiosClient.get(`/scoring/${id}`),
-  create: (data) => axiosClient.post(`/scoring`, data),
-  update: (id, data) => axiosClient.put(`/scoring/${id}`, data),
-  delete: (id) => axiosClient.delete(`/scoring/${id}`),
-};
+export const getScores = () => axiosClient.get('/scores');
+export const recalculateScore = (data) => axiosClient.post('/scores/recalculate', data);
 
-export default scoringApi;
+export const getSettings = () => axiosClient.get('/settings');
+export const updateSettings = (data) => axiosClient.put('/settings', data);
+
+export const exportReport = (data) =>
+  axiosClient.post('/reports/export', data, {
+    responseType: 'blob', // needed for file downloads
+  });
+
