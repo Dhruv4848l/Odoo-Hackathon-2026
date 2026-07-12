@@ -59,7 +59,13 @@ exports.getAcknowledgementsForPolicy = async (req, res, next) => {
   try {
     const { policyId } = req.params;
 
-    const acknowledgements = await PolicyAcknowledgement.find({ policy: policyId })
+    // Guard: if policyId is a special string or not a valid ObjectId, return all
+    const mongoose = require('mongoose');
+    const query = (policyId && policyId !== 'all-user' && mongoose.Types.ObjectId.isValid(policyId))
+      ? { policy: policyId }
+      : {};
+
+    const acknowledgements = await PolicyAcknowledgement.find(query)
       .populate('user', 'username email role department')
       .populate('policy', 'title version');
 
