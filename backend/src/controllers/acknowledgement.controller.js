@@ -118,8 +118,8 @@ exports.getAcknowledgementRate = async (req, res, next) => {
       });
     }
 
-    // Calculate total organizational rate
-    const orgTotalEmployees = await User.countDocuments({ role: { $ne: 'Admin' } }); // exclude admins usually
+    // Calculate total organizational rate (include all users for consistency with department rollups)
+    const orgTotalEmployees = await User.countDocuments({});
     const orgTotalAcknowledged = await PolicyAcknowledgement.countDocuments({ policy: policyId });
     const orgRate = orgTotalEmployees > 0 ? (orgTotalAcknowledged / orgTotalEmployees) * 100 : 0;
 
@@ -136,6 +136,21 @@ exports.getAcknowledgementRate = async (req, res, next) => {
         percentage: Math.round(orgRate * 10) / 10,
       },
       departments: rateReports,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get logged-in user's acknowledgements
+exports.getMyAcknowledgements = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const acknowledgements = await PolicyAcknowledgement.find({ user: userId });
+    res.status(200).json({
+      success: true,
+      count: acknowledgements.length,
+      data: acknowledgements,
     });
   } catch (error) {
     next(error);

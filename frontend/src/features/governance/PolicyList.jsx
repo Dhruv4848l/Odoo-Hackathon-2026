@@ -63,18 +63,14 @@ export default function PolicyList() {
 
     // Fetch user's acknowledgements
     if (user) {
-      axiosClient.get('/notifications') // placeholder request to check connection
-        .then(() => {
-          // In real integration, we query the acknowledgement collection for the user.
-          // Let's call our backend endpoint directly!
-          axiosClient.get(`/acknowledgements/policy/all-user`).then(res => {
-            if (res.success) {
-              setMyAcknowledgements(res.data.map(ack => ack.policy));
-            }
-          }).catch(() => {
-            // fallback
-            setMyAcknowledgements([]);
-          });
+      axiosClient.get('/acknowledgements/my-acknowledgements')
+        .then((res) => {
+          if (res.success) {
+            setMyAcknowledgements(res.data.map(ack => ack.policy));
+          }
+        })
+        .catch(() => {
+          setMyAcknowledgements([]);
         });
     }
   }, [dispatch, user]);
