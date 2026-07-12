@@ -6,6 +6,7 @@
  * @param {string} settingField - Field name in Settings model to check (e.g. 'evidenceRequiredForCSR')
  */
 const Settings = require('../models/Settings');
+const EmployeeParticipation = require('../models/EmployeeParticipation');
 
 module.exports = (settingField) => {
   return async (req, res, next) => {
@@ -17,12 +18,23 @@ module.exports = (settingField) => {
         return next();
       }
 
-      // Toggle is ON: require a proof file attachment
-      if (!req.file && !req.body.proof) {
-        return res.status(400).json({
-          success: false,
-          message: 'Evidence/proof file is required before approval can be granted.',
-        });
+      // We need to verify if the participation record has a proof
+      if (req.params.id) {
+        const participation = await EmployeeParticipation.findById(req.params.id);
+        if (!participation || !participation.proof) {
+          return res.status(400).json({
+            success: false,
+            message: 'Evidence/proof file is required before approval can be granted.',
+          });
+        }
+      } else {
+        // Fallback to checking request payload if id is not in params
+        if (!req.file && !req.body.proof) {
+          return res.status(400).json({
+            success: false,
+            message: 'Evidence/proof file is required before approval can be granted.',
+          });
+        }
       }
 
       next();

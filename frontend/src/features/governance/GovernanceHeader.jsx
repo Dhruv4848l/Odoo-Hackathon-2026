@@ -9,11 +9,12 @@ export default function GovernanceHeader() {
     { to: '/governance/policies', label: '📜 Policies' },
   ];
 
-  // Only show Tracker & Kanban for Admins, Managers, and Auditors
+  // Only show Tracker, Audits & Kanban for Admins, Managers, and Auditors
   if (user && ['Admin', 'Manager', 'Auditor'].includes(user.role)) {
     links.push(
-      { to: '/governance/tracker', label: '⚖️ Acknowledgement Tracker' },
-      { to: '/governance/kanban', label: '📋 Kanban Board' }
+      { to: '/governance/tracker', label: '⚖️ Policy Acknowledgements' },
+      { to: '/governance/audits', label: '🔍 Audits' },
+      { to: '/governance/kanban', label: '⚠️ Compliance Issues' }
     );
   }
 

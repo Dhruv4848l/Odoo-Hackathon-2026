@@ -26,11 +26,14 @@ import Leaderboard from '../features/social/Leaderboard';
 import ApprovalQueue from '../features/social/ApprovalQueue';
 import BadgeGallery from '../features/social/BadgeGallery';
 import ChallengeParticipationBoard from '../features/social/ChallengeParticipationBoard';
+import EmployeeParticipationTracker from '../features/social/EmployeeParticipationTracker';
+import DiversityDashboard from '../features/social/DiversityDashboard';
 
 // Governance (Dev C)
 import PolicyList from '../features/governance/PolicyList';
 import AcknowledgementTracker from '../features/governance/AcknowledgementTracker';
 import ComplianceKanban from '../features/governance/ComplianceKanban';
+import AuditManager from '../features/governance/AuditManager';
 
 // Admin / Settings (Dev A & D)
 import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
@@ -48,33 +51,29 @@ const SocialDashboard = () => {
 
   const tabs = [
     { id: 'activities', label: '🤝 CSR Activities', component: <CSRActivityList /> },
+    { id: 'participation', label: '🏃‍♂️ Employee Participation', component: <EmployeeParticipationTracker /> },
+    { id: 'diversity', label: '📊 Diversity Dashboard', component: <DiversityDashboard /> },
   ];
-
-  if (user && ['Admin', 'Manager'].includes(user.role)) {
-    tabs.push({ id: 'approvals', label: '📋 Approval Queue', component: <ApprovalQueue /> });
-  }
 
   return (
     <AppLayout title="Social & CSR">
       <div className="flex flex-col gap-6">
         {/* Tab Selector */}
-        {tabs.length > 1 && (
-          <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-brand-primary text-neutral-surface shadow-sm'
-                    : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-brand-primary text-neutral-surface shadow-sm'
+                  : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
         {/* Tab Content */}
         <div className="flex-1">
@@ -280,6 +279,16 @@ export const AppRoutes = () => {
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
             <AppLayout title="Acknowledgement Tracker">
               <AcknowledgementTracker />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/governance/audits"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
+            <AppLayout title="Audits Dashboard">
+              <AuditManager />
             </AppLayout>
           </PrivateRoute>
         }
