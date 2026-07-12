@@ -3,6 +3,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell, PieChart, Pie
 } from 'recharts';
+import { Wind, FileText, Target, CheckCircle, BarChart3, RefreshCw, Leaf } from 'lucide-react';
 import axiosClient from '../../api/axiosClient';
 import EnvironmentalHeader from './EnvironmentalHeader';
 import CarbonTransactionBoard from './CarbonTransactionBoard';
@@ -10,21 +11,18 @@ import EnvironmentalGoalBoard from './EnvironmentalGoalBoard';
 
 const COLORS = ['#1F5C4D', '#2E6DA4', '#C9862A', '#8E3B46', '#4CAF50', '#FF9800'];
 
-const StatCard = ({ label, value, unit, icon, color = 'brand-primary', trend }) => (
-  <div className="bg-neutral-surface rounded-xl p-5 shadow-sm border border-neutral-border/60 hover:shadow-md transition-shadow">
-    <div className="flex justify-between items-start">
-      <div>
-        <p className="text-xs font-semibold text-neutral-textMuted uppercase tracking-wider">{label}</p>
-        <p className={`text-3xl font-display font-bold text-${color} mt-1`}>{value}</p>
-        {unit && <p className="text-xs text-neutral-textMuted mt-0.5">{unit}</p>}
+const StatCard = ({ label, value, unit, icon: Icon, color = 'text-[#1F5C4D]', trend }) => (
+  <div className="bg-neutral-surface rounded-2xl p-5 border border-neutral-border/60 shadow-[0_4px_16px_rgba(0,0,0,0.02)] flex items-center justify-between hover:-translate-y-0.5 hover:shadow-md transition-all duration-300">
+    <div className="flex-1 min-w-0">
+      <p className="text-[10px] font-bold text-neutral-textMuted uppercase tracking-wider leading-none mb-1.5">{label}</p>
+      <div className="flex items-baseline gap-1 mt-1">
+        <p className={`text-2xl font-display font-black ${color}`}>{value}</p>
+        {unit && <span className="text-xs text-neutral-textMuted font-semibold ml-1">{unit}</span>}
       </div>
-      <span className="text-2xl">{icon}</span>
     </div>
-    {trend !== undefined && (
-      <div className={`mt-3 text-xs font-medium ${trend <= 0 ? 'text-green-600' : 'text-red-500'}`}>
-        {trend <= 0 ? '↓' : '↑'} {Math.abs(trend)}% vs last period
-      </div>
-    )}
+    <div className="p-2 bg-neutral-bg/60 rounded-xl flex items-center justify-center flex-shrink-0 ml-3">
+      <Icon className={`w-5 h-5 ${color}`} />
+    </div>
   </div>
 );
 
@@ -103,139 +101,163 @@ export default function EnvironmentalDashboard() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
       <EnvironmentalHeader />
 
-        {/* Dashboard Title Section */}
-        <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-sm border border-neutral-border/60 gap-4">
-          <div>
-            <h1 className="text-xl font-display font-bold text-brand-primary">🌿 Environmental Dashboard</h1>
-            <p className="text-sm text-neutral-textMuted mt-1">Real-time carbon emission tracking and goal attainment</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <label className="text-xs font-semibold text-neutral-textMuted uppercase">Period</label>
-            <select
-              value={dateRange} onChange={(e) => setDateRange(e.target.value)}
-              className="px-3 py-2 border border-neutral-border rounded-lg text-sm bg-neutral-bg focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-            >
-              <option value="7">Last 7 Days</option>
-              <option value="30">Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
-              <option value="365">This Year</option>
-            </select>
-            <button onClick={fetchData} className="px-3 py-2 border border-brand-primary text-brand-primary rounded-lg text-sm hover:bg-brand-primary hover:text-white transition-all">
-              ↻ Refresh
-            </button>
-          </div>
+      {/* Dashboard Title Section */}
+      <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 gap-4">
+        <div>
+          <h1 className="text-lg font-display font-black text-[#1F5C4D] flex items-center gap-2">
+            <Leaf className="w-5 h-5 text-brand-primary" /> Environmental Dashboard
+          </h1>
+          <p className="text-xs text-neutral-textMuted mt-0.5 font-medium">Real-time carbon emission tracking and goal attainment</p>
         </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <label className="text-[10px] font-bold text-neutral-textMuted uppercase tracking-wider">Period</label>
+          <select
+            value={dateRange} onChange={(e) => setDateRange(e.target.value)}
+            className="px-3 py-1.5 border border-neutral-border rounded-xl text-xs bg-neutral-bg font-semibold focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+          >
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="365">This Year</option>
+          </select>
+          <button 
+            onClick={fetchData} 
+            className="px-3.5 py-1.5 border border-brand-primary text-brand-primary font-bold rounded-xl text-xs hover:bg-brand-primary hover:text-white transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Refresh
+          </button>
+        </div>
+      </div>
 
-        {/* Sub-tabs Selector */}
-        <div className="flex bg-neutral-surface p-1 rounded-xl border border-neutral-border/60 shadow-sm">
-          {[
-            { key: 'overview', label: '📊 Overview' },
-            { key: 'transactions', label: '📋 Transactions' },
-            { key: 'goals', label: '🎯 Goals' },
-          ].map(tab => (
+      {/* Sub-tabs Selector */}
+      <div className="flex bg-neutral-surface p-1 rounded-2xl border border-neutral-border/60 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+        {[
+          { key: 'overview', label: 'Overview', icon: BarChart3 },
+          { key: 'transactions', label: 'Transactions', icon: FileText },
+          { key: 'goals', label: 'Goals', icon: Target },
+        ].map(tab => {
+          const Icon = tab.icon;
+          return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-2.5 text-center font-medium rounded-lg text-sm transition-all ${
+              className={`flex-1 py-2.5 text-center font-bold rounded-xl text-xs transition-all active:scale-[0.99] cursor-pointer flex items-center justify-center gap-1.5 ${
                 activeTab === tab.key
-                  ? 'bg-brand-primary text-white shadow-sm'
-                  : 'text-neutral-textMuted hover:text-neutral-text'
+                  ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10'
+                  : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg/50'
               }`}
             >
-              {tab.label}
+              <Icon className="w-4 h-4" />
+              <span>{tab.label}</span>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        {/* Overview Tab Content */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* KPI Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard label="Total CO₂ Emitted" value={totalCarbon.toFixed(1)} unit="kg CO₂e" icon="💨" />
-              <StatCard label="Transactions Logged" value={transactions.length} unit={`in last ${dateRange} days`} icon="📝" />
-              <StatCard label="Active Goals" value={activeGoals} unit="emission targets" icon="🎯" />
-              <StatCard label="Goals Achieved" value={achievedGoals} unit="targets met" icon="✅" color="green-600" />
-            </div>
+      {/* Overview Tab Content */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="Total CO₂ Emitted" value={totalCarbon.toFixed(1)} unit="kg" icon={Wind} />
+            <StatCard label="Transactions Logged" value={transactions.length} unit="entries" icon={FileText} />
+            <StatCard label="Active Goals" value={activeGoals} unit="targets" icon={Target} />
+            <StatCard label="Goals Achieved" value={achievedGoals} unit="completed" icon={CheckCircle} color="text-green-600" />
+          </div>
 
-            {/* Area Chart – Emissions over time */}
-            <div className="bg-neutral-surface rounded-xl shadow-md border border-neutral-border/60 p-6">
-              <h3 className="font-bold text-neutral-text mb-4">Carbon Emissions Over Time (kg CO₂e)</h3>
-              {emissionsByDay.length === 0 ? (
-                <div className="flex items-center justify-center h-48 text-neutral-textMuted text-sm">No transaction data in this period.</div>
-              ) : (
-                <ResponsiveContainer width="100%" height={250}>
+          {/* Area Chart – Emissions over time */}
+          <div className="bg-neutral-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 p-6">
+            <h3 className="text-sm font-bold text-neutral-text mb-4 font-display">Carbon Emissions Over Time (kg CO₂e)</h3>
+            {emissionsByDay.length === 0 ? (
+              <div className="flex items-center justify-center h-48 text-neutral-textMuted text-xs font-semibold">No transaction data in this period.</div>
+            ) : (
+              <div className="h-[250px]">
+                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={emissionsByDay}>
                     <defs>
                       <linearGradient id="carbonGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1F5C4D" stopOpacity={0.3} />
+                        <stop offset="5%" stopColor="#1F5C4D" stopOpacity={0.2} />
                         <stop offset="95%" stopColor="#1F5C4D" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v) => [`${v} kg CO₂e`, 'Emissions']} />
-                    <Area type="monotone" dataKey="carbon" stroke="#1F5C4D" strokeWidth={2} fill="url(#carbonGrad)" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.4} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6B7280' }} />
+                    <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#fff', borderColor: '#E5E7EB', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: 12 }}
+                      formatter={(v) => [`${v} kg CO₂e`, 'Emissions']} 
+                    />
+                    <Area type="monotone" dataKey="carbon" stroke="#1F5C4D" strokeWidth={2} fill="url(#carbonGrad)" dot={{ r: 2 }} />
                   </AreaChart>
                 </ResponsiveContainer>
-              )}
-            </div>
+              </div>
+            )}
+          </div>
 
-            {/* Two-column lower charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Department Bar Chart */}
-              <div className="bg-neutral-surface rounded-xl shadow-md border border-neutral-border/60 p-6">
-                <h3 className="font-bold text-neutral-text mb-4">Emissions by Department (kg CO₂e)</h3>
-                {emissionsByDept.length === 0 ? (
-                  <div className="flex items-center justify-center h-40 text-neutral-textMuted text-sm">No data yet.</div>
-                ) : (
-                  <ResponsiveContainer width="100%" height={220}>
+          {/* Two-column lower charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Department Bar Chart */}
+            <div className="bg-neutral-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 p-6">
+              <h3 className="text-sm font-bold text-neutral-text mb-4 font-display">Emissions by Department (kg CO₂e)</h3>
+              {emissionsByDept.length === 0 ? (
+                <div className="flex items-center justify-center h-40 text-neutral-textMuted text-xs font-semibold">No data yet.</div>
+              ) : (
+                <div className="h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={emissionsByDept}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                      <XAxis dataKey="dept" tick={{ fontSize: 11 }} />
-                      <YAxis tick={{ fontSize: 11 }} />
-                      <Tooltip formatter={(v) => [`${v} kg CO₂e`, 'Carbon']} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" opacity={0.4} />
+                      <XAxis dataKey="dept" tick={{ fontSize: 11, fill: '#6B7280' }} />
+                      <YAxis tick={{ fontSize: 11, fill: '#6B7280' }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderColor: '#E5E7EB', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: 12 }}
+                        formatter={(v) => [`${v} kg CO₂e`, 'Carbon']} 
+                      />
                       <Bar dataKey="carbon" fill="#1F5C4D" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
-              {/* Category Pie Chart */}
-              <div className="bg-neutral-surface rounded-xl shadow-md border border-neutral-border/60 p-6">
-                <h3 className="font-bold text-neutral-text mb-4">Emissions by Category</h3>
-                {emissionsByCategory.length === 0 ? (
-                  <div className="flex items-center justify-center h-40 text-neutral-textMuted text-sm">No data yet.</div>
-                ) : (
-                  <ResponsiveContainer width="100%" height={220}>
+            {/* Category Pie Chart */}
+            <div className="bg-neutral-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 p-6">
+              <h3 className="text-sm font-bold text-neutral-text mb-4 font-display">Emissions by Category</h3>
+              {emissionsByCategory.length === 0 ? (
+                <div className="flex items-center justify-center h-40 text-neutral-textMuted text-xs font-semibold">No data yet.</div>
+              ) : (
+                <div className="h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={emissionsByCategory} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                      <Pie data={emissionsByCategory} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                         {emissionsByCategory.map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v) => [`${v} kg CO₂e`]} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderColor: '#E5E7EB', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', fontSize: 12 }}
+                        formatter={(v) => [`${v} kg CO₂e`]} 
+                      />
                     </PieChart>
                   </ResponsiveContainer>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Transactions Tab Content */}
-        {activeTab === 'transactions' && (
-          <CarbonTransactionBoard />
-        )}
+      {/* Transactions Tab Content */}
+      {activeTab === 'transactions' && (
+        <CarbonTransactionBoard />
+      )}
 
-        {/* Goals Tab Content */}
-        {activeTab === 'goals' && (
-          <EnvironmentalGoalBoard />
-        )}
+      {/* Goals Tab Content */}
+      {activeTab === 'goals' && (
+        <EnvironmentalGoalBoard />
+      )}
     </div>
   );
 }

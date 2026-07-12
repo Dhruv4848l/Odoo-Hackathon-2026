@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import AppLayout from '../../components/layout/AppLayout';
 import * as scoringApi from '../../api/scoring.api';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { FileText, Download, Loader2, Leaf, Users, Scale, BarChart3 } from 'lucide-react';
 
 const REPORT_TYPES = [
   {
     id: 'env',
     title: 'Environmental Report',
     description: 'Carbon emissions, sustainability goals, and emission factors breakdown.',
-    icon: '🌱',
+    icon: Leaf,
     color: 'border-module-environmental',
     accent: 'text-module-environmental',
   },
@@ -16,7 +16,7 @@ const REPORT_TYPES = [
     id: 'social',
     title: 'Social Report',
     description: 'CSR activity participation, diversity metrics, and training completion.',
-    icon: '🤝',
+    icon: Users,
     color: 'border-module-social',
     accent: 'text-module-social',
   },
@@ -24,7 +24,7 @@ const REPORT_TYPES = [
     id: 'governance',
     title: 'Governance Report',
     description: 'Policy acknowledgement rates, audit findings, and compliance issue status.',
-    icon: '⚖️',
+    icon: Scale,
     color: 'border-module-governance',
     accent: 'text-module-governance',
   },
@@ -32,7 +32,7 @@ const REPORT_TYPES = [
     id: 'esg-summary',
     title: 'ESG Summary Report',
     description: 'Full combined Env/Social/Gov score rollup per department.',
-    icon: '📊',
+    icon: BarChart3,
     color: 'border-brand-primary',
     accent: 'text-brand-primary',
   },
@@ -64,22 +64,24 @@ const FixedReports = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-neutral-textMuted font-medium">
           Download pre-built standard reports. Data is pulled live from the database.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {REPORT_TYPES.map(({ id, title, description, icon, color, accent }) => (
+        {REPORT_TYPES.map(({ id, title, description, icon: Icon, color, accent }) => (
           <div
             key={id}
-            className={`bg-white rounded-xl p-6 shadow-sm border-l-4 border border-gray-100 ${color} hover:shadow-md transition-shadow`}
+            className={`bg-neutral-surface rounded-2xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 border-l-4 ${color} hover:shadow-md transition-shadow`}
           >
-            <div className="flex items-start gap-3 mb-4">
-              <span className="text-2xl">{icon}</span>
+            <div className="flex items-start gap-3.5 mb-4">
+              <div className="p-2.5 bg-neutral-bg/60 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Icon size={18} className={accent} />
+              </div>
               <div>
-                <h3 className={`font-display font-semibold text-neutral-text`}>{title}</h3>
-                <p className="text-xs text-gray-400 mt-1">{description}</p>
+                <h3 className={`font-display font-bold text-neutral-text text-sm`}>{title}</h3>
+                <p className="text-xs text-neutral-textMuted font-medium mt-1 leading-relaxed">{description}</p>
               </div>
             </div>
             <div className="flex gap-2">

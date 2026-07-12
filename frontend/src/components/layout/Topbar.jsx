@@ -41,20 +41,20 @@ const Topbar = ({ title }) => {
   };
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-40 flex items-center justify-between px-6 py-4 bg-neutral-surface/85 backdrop-blur-md border-b border-neutral-border/40 shadow-sm transition-all duration-300">
       <h1 className="text-xl font-display font-bold text-neutral-text tracking-tight">
         {title}
       </h1>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {/* Notification bell & dropdown container */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="relative p-2 rounded-full hover:bg-gray-100 transition text-gray-500 hover:text-brand-primary"
+            className="relative p-2 rounded-full hover:bg-neutral-bg transition-all duration-200 text-neutral-textMuted hover:text-brand-primary active:scale-95"
           >
             <Bell size={18} />
             {unreadNotificationsCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm px-1">
+              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-alert text-[10px] font-bold text-white shadow-md animate-pulse">
                 {unreadNotificationsCount}
               </span>
             )}
@@ -62,13 +62,13 @@ const Topbar = ({ title }) => {
 
           {/* Dropdown menu */}
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <span className="font-semibold text-sm text-neutral-text">Notifications</span>
+            <div className="absolute right-0 mt-3 w-80 bg-neutral-surface border border-neutral-border/60 rounded-2xl shadow-2xl z-50 overflow-hidden animate-fade-in">
+              <div className="flex items-center justify-between px-4 py-3 bg-neutral-bg/50 border-b border-neutral-border/40">
+                <span className="font-semibold text-sm text-neutral-text font-display">Notifications</span>
                 {unreadNotificationsCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-xs text-brand-primary font-medium hover:underline flex items-center gap-1"
+                    className="text-xs text-brand-primary font-bold hover:underline flex items-center gap-1 hover:text-brand-primary/80 transition-colors"
                   >
                     <CheckCheck size={14} />
                     Mark all read
@@ -76,10 +76,10 @@ const Topbar = ({ title }) => {
                 )}
               </div>
 
-              <div className="max-h-64 overflow-y-auto divide-y divide-gray-50">
+              <div className="max-h-64 overflow-y-auto divide-y divide-neutral-border/30 custom-scrollbar">
                 {notifications.length === 0 ? (
-                  <div className="text-center py-8 text-gray-400 text-xs">
-                    No notifications
+                  <div className="text-center py-10 text-neutral-textMuted text-xs font-medium">
+                    No new alerts
                   </div>
                 ) : (
                   notifications.map((n) => (
@@ -87,24 +87,24 @@ const Topbar = ({ title }) => {
                       key={n._id}
                       onClick={() => !n.read && handleMarkRead(n._id)}
                       className={`px-4 py-3 text-left transition-colors cursor-pointer flex gap-3
-                        ${n.read ? 'bg-white hover:bg-gray-50/50' : 'bg-green-50/40 hover:bg-green-50/80'}`}
+                        ${n.read ? 'bg-neutral-surface hover:bg-neutral-bg/30' : 'bg-green-50/20 hover:bg-green-50/40'}`}
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className={`text-xs font-bold ${n.read ? 'text-gray-500' : 'text-green-700'}`}>
+                          <span className={`text-xs font-bold ${n.read ? 'text-neutral-textMuted' : 'text-[#1F5C4D]'}`}>
                             {n.type || 'Alert'}
                           </span>
-                          <span className="text-[10px] text-gray-400">
+                          <span className="text-[10px] text-neutral-textMuted font-medium">
                             {n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                           </span>
                         </div>
-                        <p className={`text-xs ${n.read ? 'text-gray-500' : 'text-neutral-text font-medium'}`}>
+                        <p className={`text-xs leading-relaxed ${n.read ? 'text-neutral-textMuted' : 'text-neutral-text font-semibold'}`}>
                           {n.message}
                         </p>
                       </div>
                       {!n.read && (
                         <div className="flex items-center">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                          <span className="w-1.5 h-1.5 bg-[#2EE08A] rounded-full shadow-[0_0_8px_rgba(46,224,138,0.8)]" />
                         </div>
                       )}
                     </div>
@@ -115,16 +115,16 @@ const Topbar = ({ title }) => {
           )}
         </div>
 
-        {/* Avatar */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white text-xs font-bold">
-            {user?.username ? user.username[0].toUpperCase() : <User size={14} />}
+        {/* User Profile */}
+        <div className="flex items-center gap-3 pl-2 border-l border-neutral-border/50">
+          <div className="w-9 h-9 rounded-full bg-brand-primary border-2 border-brand-primary/20 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+            {user?.username ? user.username[0].toUpperCase() : <User size={15} />}
           </div>
-          <div className="hidden sm:block text-right">
-            <p className="text-sm font-semibold text-neutral-text leading-none">
+          <div className="hidden sm:block text-left">
+            <p className="text-sm font-bold text-neutral-text leading-tight">
               {user?.username || 'User'}
             </p>
-            <p className="text-xs text-gray-400">{user?.role || ''}</p>
+            <p className="text-[10px] font-bold text-neutral-textMuted uppercase tracking-wider mt-0.5">{user?.role || ''}</p>
           </div>
         </div>
       </div>

@@ -222,37 +222,39 @@ export default function ComplianceKanban() {
   // Helpers and card components are defined at the bottom of the file
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="container mx-auto p-6 max-w-7xl animate-fade-in">
       <GovernanceHeader />
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-display font-semibold text-brand-primary">📋 Governance Kanban</h1>
-          <p className="text-neutral-textMuted mt-1">Schedule environmental audits and trace compliance violations.</p>
+          <h1 className="text-lg font-display font-black text-brand-primary flex items-center gap-2">
+            <ClipboardList className="w-5 h-5 text-brand-primary" /> Governance Kanban
+          </h1>
+          <p className="text-xs text-neutral-textMuted mt-0.5 font-medium">Schedule environmental audits and trace compliance violations.</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Toggle View */}
-          <div className="bg-neutral-surface border border-neutral-border rounded-lg p-1 flex">
+          <div className="bg-neutral-surface border border-neutral-border/60 rounded-xl p-1 flex">
             <button
               onClick={() => setKanbanView('issues')}
-              className={`flex items-center gap-1.5 px-4.5 py-1.5 rounded-md font-medium text-sm transition-colors ${
+              className={`flex items-center gap-1.5 px-4.5 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                 kanbanView === 'issues' 
-                  ? 'bg-brand-alert text-white shadow-sm' 
+                  ? 'bg-brand-alert text-white shadow-md shadow-brand-alert/10' 
                   : 'text-neutral-textMuted hover:text-neutral-text'
               }`}
             >
-              <AlertTriangle className="w-4.5 h-4.5" /> Issues
+              <AlertTriangle className="w-4 h-4" /> Issues
             </button>
             <button
               onClick={() => setKanbanView('audits')}
-              className={`flex items-center gap-1.5 px-4.5 py-1.5 rounded-md font-medium text-sm transition-colors ${
+              className={`flex items-center gap-1.5 px-4.5 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                 kanbanView === 'audits' 
-                  ? 'bg-brand-primary text-white shadow-sm' 
+                  ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10' 
                   : 'text-neutral-textMuted hover:text-neutral-text'
               }`}
             >
-              <ClipboardList className="w-4.5 h-4.5" /> Audits
+              <ClipboardList className="w-4 h-4" /> Audits
             </button>
           </div>
 
@@ -261,16 +263,16 @@ export default function ComplianceKanban() {
             kanbanView === 'issues' ? (
               <button
                 onClick={() => setShowIssueModal(true)}
-                className="flex items-center gap-1.5 bg-brand-alert text-white px-4 py-2 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
+                className="flex items-center gap-1.5 bg-brand-alert text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-[#72202b] shadow-md shadow-brand-alert/10 transition-all cursor-pointer active:scale-95"
               >
-                <Plus className="w-4.5 h-4.5" /> Raise Issue
+                <Plus className="w-4 h-4" /> Raise Issue
               </button>
             ) : (
               <button
                 onClick={() => setShowAuditModal(true)}
-                className="flex items-center gap-1.5 bg-brand-primary text-white px-4 py-2 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity"
+                className="flex items-center gap-1.5 bg-brand-primary text-white px-4 py-2.5 rounded-xl font-bold text-xs hover:bg-[#164237] shadow-md shadow-brand-primary/10 transition-all cursor-pointer active:scale-95"
               >
-                <Plus className="w-4.5 h-4.5" /> Schedule Audit
+                <Plus className="w-4 h-4" /> Schedule Audit
               </button>
             )
           )}
@@ -279,7 +281,7 @@ export default function ComplianceKanban() {
 
       {/* --- KANBAN LANES: COMPLIANCE ISSUES --- */}
       {kanbanView === 'issues' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-[650px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-[500px]">
           {/* Lane 1: Open */}
           <div className="bg-neutral-bg/40 rounded-lg p-3 flex flex-col h-full border border-neutral-border/50">
             <div className="flex justify-between items-center mb-3">
@@ -346,7 +348,7 @@ export default function ComplianceKanban() {
 
       {/* --- KANBAN LANES: AUDITS --- */}
       {kanbanView === 'audits' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[650px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[500px]">
           {/* Lane 1: Scheduled */}
           <div className="bg-neutral-bg/40 rounded-lg p-4 flex flex-col h-full border border-neutral-border/50">
             <div className="flex justify-between items-center mb-3">
@@ -829,19 +831,19 @@ export default function ComplianceKanban() {
 
 const getSeverityBorder = (sev) => {
   switch (sev) {
-    case 'Critical': return 'border-l-red-600';
-    case 'High': return 'border-l-orange-500';
-    case 'Medium': return 'border-l-blue-400';
-    default: return 'border-l-gray-300';
+    case 'Critical': return 'border-l-[#8E3B46]';
+    case 'High': return 'border-l-[#C9862A]';
+    case 'Medium': return 'border-l-[#2E6DA4]';
+    default: return 'border-l-[#1F5C4D]';
   }
 };
 
 const getSeverityBadge = (sev) => {
   switch (sev) {
-    case 'Critical': return 'bg-red-50 text-red-700 border-red-200';
-    case 'High': return 'bg-orange-50 text-orange-700 border-orange-200';
-    case 'Medium': return 'bg-blue-50 text-blue-700 border-blue-200';
-    default: return 'bg-gray-50 text-gray-700 border-gray-200';
+    case 'Critical': return 'bg-[#8E3B46]/10 text-[#8E3B46] border-[#8E3B46]/20';
+    case 'High': return 'bg-[#C9862A]/10 text-[#C9862A] border-[#C9862A]/20';
+    case 'Medium': return 'bg-[#2E6DA4]/10 text-[#2E6DA4] border-[#2E6DA4]/20';
+    default: return 'bg-[#1F5C4D]/10 text-[#1F5C4D] border-[#1F5C4D]/20';
   }
 };
 
@@ -849,22 +851,22 @@ function ComplianceCard({ issue, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className={`bg-neutral-surface rounded-lg border-l-4 p-3.5 shadow-sm border border-neutral-border \${getSeverityBorder(issue.severity)} hover:shadow transition-shadow cursor-pointer space-y-2`}
+      className={`bg-neutral-surface rounded-2xl border-l-4 p-4 shadow-[0_4px_16px_rgba(0,0,0,0.01)] border border-neutral-border/60 ${getSeverityBorder(issue.severity)} hover:-translate-y-0.5 hover:shadow-[0_8px_16px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer space-y-2.5`}
     >
       <div className="flex justify-between items-center">
-        <span className="text-[11px] font-mono text-neutral-textMuted bg-neutral-bg px-2 py-0.5 rounded uppercase">
+        <span className="text-[10px] font-bold text-neutral-textMuted bg-neutral-bg px-2.5 py-0.5 rounded-lg border border-neutral-border/30 uppercase tracking-wide">
           {issue.department?.code || 'DEPT'}
         </span>
-        <span className={`text-[10px] font-semibold px-2 py-0.5 border rounded-full uppercase \${getSeverityBadge(issue.severity)}`}>
+        <span className={`text-[9px] font-bold px-2 py-0.5 border rounded-full uppercase tracking-wider ${getSeverityBadge(issue.severity)}`}>
           {issue.severity}
         </span>
       </div>
-      <h4 className="font-display font-medium text-neutral-text text-sm line-clamp-1">{issue.title}</h4>
-      <div className="flex justify-between items-center text-xs text-neutral-textMuted pt-1.5">
-        <span className="flex items-center gap-1">
+      <h4 className="font-display font-bold text-neutral-text text-sm line-clamp-1 leading-snug">{issue.title}</h4>
+      <div className="flex justify-between items-center text-[11px] font-semibold text-neutral-textMuted pt-1">
+        <span className="flex items-center gap-1.5">
           <User className="w-3.5 h-3.5 text-neutral-textMuted" /> {issue.owner?.username || 'Owner'}
         </span>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1.5">
           <Calendar className="w-3.5 h-3.5 text-neutral-textMuted" /> {new Date(issue.dueDate).toLocaleDateString()}
         </span>
       </div>
@@ -876,16 +878,16 @@ function AuditCard({ audit, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className="bg-neutral-surface rounded-lg p-4 shadow-sm border border-neutral-border hover:shadow transition-all cursor-pointer space-y-3"
+      className="bg-neutral-surface rounded-2xl p-4.5 shadow-[0_4px_16px_rgba(0,0,0,0.01)] border border-neutral-border/60 hover:-translate-y-0.5 hover:shadow-[0_8px_16px_rgba(0,0,0,0.04)] transition-all duration-200 cursor-pointer space-y-3"
     >
-      <div className="flex justify-between items-start">
-        <h4 className="font-display font-semibold text-neutral-text text-sm line-clamp-2">{audit.title}</h4>
-        <span className="text-[10px] font-mono text-neutral-textMuted bg-neutral-bg px-2 py-0.5 rounded uppercase">
+      <div className="flex justify-between items-start gap-2">
+        <h4 className="font-display font-bold text-neutral-text text-sm line-clamp-2 leading-snug">{audit.title}</h4>
+        <span className="text-[10px] font-bold text-neutral-textMuted bg-neutral-bg px-2.5 py-0.5 rounded-lg border border-neutral-border/30 uppercase tracking-wide flex-shrink-0">
           {audit.department?.code || 'DEPT'}
         </span>
       </div>
       
-      <div className="grid grid-cols-2 gap-2 text-xs text-neutral-textMuted pt-1 border-t border-neutral-border/50">
+      <div className="grid grid-cols-2 gap-2 text-[11px] font-semibold text-neutral-textMuted pt-2 border-t border-neutral-border/40">
         <div className="flex items-center gap-1.5">
           <User className="w-3.5 h-3.5" /> 
           <span className="truncate">{audit.auditor?.username || 'Auditor'}</span>
@@ -897,9 +899,9 @@ function AuditCard({ audit, onClick }) {
       </div>
 
       {audit.status === 'Completed' && audit.score !== undefined && (
-        <div className="flex justify-between items-center pt-1 text-xs">
+        <div className="flex justify-between items-center pt-1.5 text-xs font-semibold">
           <span className="text-neutral-textMuted">Audit Score:</span>
-          <span className="font-bold text-brand-primary">{audit.score} / 100</span>
+          <span className="font-black text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded-md border border-brand-primary/15">{audit.score} / 100</span>
         </div>
       )}
     </div>

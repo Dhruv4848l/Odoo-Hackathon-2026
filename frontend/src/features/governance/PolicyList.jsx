@@ -137,26 +137,28 @@ export default function PolicyList() {
   const isSigned = (policyId) => myAcknowledgements.includes(policyId);
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="container mx-auto p-6 max-w-7xl animate-fade-in">
       <GovernanceHeader />
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-display font-semibold text-brand-primary">📜 ESG Compliance Policies</h1>
-          <p className="text-neutral-textMuted mt-1">Review corporate sustainability guidelines and submit mandatory sign-offs.</p>
+          <h1 className="text-lg font-display font-black text-brand-primary flex items-center gap-2">
+            <FileText className="w-5 h-5 text-brand-primary" /> ESG Compliance Policies
+          </h1>
+          <p className="text-xs text-neutral-textMuted mt-0.5 font-medium">Review corporate sustainability guidelines and submit mandatory sign-offs.</p>
         </div>
         {(user?.role === 'Admin' || user?.role === 'Manager') && (
           <button
             onClick={() => setShowPublishModal(true)}
-            className="flex items-center gap-2 bg-brand-primary text-white px-4 py-2 rounded-lg font-medium shadow hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 bg-brand-primary hover:bg-[#164237] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-brand-primary/10 transition-all cursor-pointer active:scale-95"
           >
-            <Plus className="w-5 h-5" /> Publish Policy
+            <Plus className="w-4 h-4" /> Publish Policy
           </button>
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Policy Search & List */}
-        <div className="bg-neutral-surface rounded-lg shadow-card border border-neutral-border p-4 flex flex-col h-[650px]">
+        <div className="bg-neutral-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 p-4 flex flex-col h-[500px]">
           <div className="relative mb-4">
             <Search className="absolute left-3 top-2.5 text-neutral-textMuted w-5 h-5" />
             <input
@@ -164,7 +166,7 @@ export default function PolicyList() {
               placeholder="Search policies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-neutral-bg pl-10 pr-4 py-2 border border-neutral-border rounded-lg focus:outline-none focus:border-brand-primary transition-colors text-sm"
+              className="w-full bg-neutral-bg pl-10 pr-4 py-2 border border-neutral-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary font-semibold transition-all text-xs"
             />
           </div>
 
@@ -180,9 +182,9 @@ export default function PolicyList() {
                   <div
                     key={policy._id}
                     onClick={() => setSelectedPolicy(policy)}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                       selectedPolicy?._id === policy._id
-                        ? 'border-brand-primary bg-neutral-bg/50 shadow-sm'
+                        ? 'border-brand-primary bg-brand-primary/5 shadow-sm'
                         : 'border-neutral-border hover:border-neutral-textMuted'
                     }`}
                   >
@@ -220,7 +222,7 @@ export default function PolicyList() {
         </div>
 
         {/* Right Column: Policy Detail Panel */}
-        <div className="lg:col-span-2 bg-neutral-surface rounded-lg shadow-card border border-neutral-border p-6 flex flex-col h-[650px]">
+        <div className="lg:col-span-2 bg-neutral-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-neutral-border/60 p-6 flex flex-col h-[500px]">
           {selectedPolicy ? (
             <div className="flex flex-col h-full">
               {/* Header */}
@@ -281,13 +283,13 @@ export default function PolicyList() {
                           placeholder={`Type username: "${user?.username}" to confirm sign-off`}
                           value={signatureName}
                           onChange={(e) => setSignatureName(e.target.value)}
-                          className="w-full bg-white px-3 py-2 border border-neutral-border rounded-lg text-sm focus:outline-none focus:border-brand-primary"
+                          className="w-full bg-white px-3 py-2 border border-neutral-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary font-semibold transition-all"
                         />
                         {ackError && <p className="text-xs text-brand-alert mt-1.5 font-medium">{ackError}</p>}
                       </div>
                       <button
                         type="submit"
-                        className="bg-brand-primary text-white font-medium px-5 py-2 rounded-lg text-sm hover:opacity-95 transition-opacity"
+                        className="bg-brand-primary hover:bg-[#164237] text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md shadow-brand-primary/10 transition-all cursor-pointer active:scale-95 whitespace-nowrap"
                       >
                         Acknowledge & Sign
                       </button>

@@ -23,9 +23,137 @@
   --font-display: "Poppins", system-ui, sans-serif;
 }
 
+/* Global Polish */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
   background-color: var(--color-neutral-bg);
   color: var(--color-neutral-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Standard Custom Scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(31, 92, 77, 0.2);
+  border-radius: 99px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(31, 92, 77, 0.4);
+}
+
+/* Global Transition Defaults */
+a, button, input, select, textarea {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Focus outline helpers */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+}
+
+/* Forest Canopy Dappled Light Rays for Login background */
+.canopy-light-ray {
+  position: absolute;
+  top: -60%;
+  left: -30%;
+  width: 180%;
+  height: 180%;
+  background: repeating-linear-gradient(
+    115deg,
+    rgba(46, 224, 138, 0.02) 0px,
+    rgba(46, 224, 138, 0.02) 50px,
+    transparent 50px,
+    transparent 100px
+  );
+  filter: blur(15px);
+  pointer-events: none;
+  transform: rotate(-15deg);
+  opacity: 0.6;
+  animation: rays-shift 25s infinite alternate ease-in-out;
+}
+
+@keyframes rays-shift {
+  0% {
+    transform: rotate(-15deg) translate(0px, 0px);
+  }
+  100% {
+    transform: rotate(-13deg) translate(25px, -15px);
+  }
+}
+
+@keyframes float-blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(50px, -70px) scale(1.15);
+  }
+  66% {
+    transform: translate(-30px, 40px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: float-blob 22s infinite alternate ease-in-out;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2.2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4.4s;
+}
+
+/* Floating Eco Particles Animation */
+@keyframes float-particle {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-60px) rotate(180deg) scale(1.08);
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg) scale(1);
+  }
+}
+
+.animate-particle {
+  animation: float-particle var(--duration, 22s) infinite ease-in-out;
 }

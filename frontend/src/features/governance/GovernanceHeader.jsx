@@ -1,44 +1,49 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FileText, ClipboardList, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export default function GovernanceHeader() {
   const { user } = useSelector((state) => state.auth);
 
   const links = [
-    { to: '/governance/policies', label: '📜 Policies' },
+    { to: '/governance/policies', label: 'Policies', icon: FileText },
   ];
 
   // Only show Tracker, Audits & Kanban for Admins, Managers, and Auditors
   if (user && ['Admin', 'Manager', 'Auditor'].includes(user.role)) {
     links.push(
-      { to: '/governance/tracker', label: '⚖️ Policy Acknowledgements' },
-      { to: '/governance/audits', label: '🔍 Audits' },
-      { to: '/governance/kanban', label: '⚠️ Compliance Issues' }
+      { to: '/governance/tracker', label: 'Policy Acknowledgements', icon: ClipboardList },
+      { to: '/governance/audits', label: 'Audits', icon: ShieldCheck },
+      { to: '/governance/kanban', label: 'Compliance Issues', icon: ShieldAlert }
     );
   }
 
   return (
     <div className="mb-6 border-b border-neutral-border pb-3 flex justify-between items-center">
       <div className="flex gap-2 overflow-x-auto">
-        {links.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            className={({ isActive }) =>
-              `px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                isActive
-                  ? 'bg-brand-primary text-white shadow-sm'
-                  : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg'
-              }`
-            }
-          >
-            {link.label}
-          </NavLink>
-        ))}
+        {links.map((link) => {
+          const Icon = link.icon;
+          return (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10'
+                    : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg'
+                }`
+              }
+            >
+              <Icon className="w-4 h-4" />
+              <span>{link.label}</span>
+            </NavLink>
+          );
+        })}
       </div>
-      <div className="text-xs text-neutral-textMuted bg-neutral-bg px-2.5 py-1 rounded-full font-mono uppercase">
-        Role: <strong>{user?.role || 'Guest'}</strong>
+      <div className="text-[10px] text-neutral-textMuted bg-neutral-bg px-2.5 py-1 rounded-full font-bold uppercase tracking-wider border border-neutral-border/30">
+        Role: <strong className="text-brand-primary font-black ml-1">{user?.role || 'Guest'}</strong>
       </div>
     </div>
   );

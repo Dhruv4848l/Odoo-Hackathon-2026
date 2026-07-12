@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FileText, Sliders, HeartHandshake, Users, BarChart3, Trophy, Award, Gift, TrendingUp, Activity } from 'lucide-react';
 
 // Layout
 import AppLayout from '../components/layout/AppLayout';
@@ -50,29 +51,33 @@ const SocialDashboard = () => {
   const [activeTab, setActiveTab] = useState('activities');
 
   const tabs = [
-    { id: 'activities', label: '🤝 CSR Activities', component: <CSRActivityList /> },
-    { id: 'participation', label: '🏃‍♂️ Employee Participation', component: <EmployeeParticipationTracker /> },
-    { id: 'diversity', label: '📊 Diversity Dashboard', component: <DiversityDashboard /> },
+    { id: 'activities', label: 'CSR Activities', icon: HeartHandshake, component: <CSRActivityList /> },
+    { id: 'participation', label: 'Employee Participation', icon: Activity, component: <EmployeeParticipationTracker /> },
+    { id: 'diversity', label: 'Diversity Dashboard', icon: BarChart3, component: <DiversityDashboard /> },
   ];
 
   return (
     <AppLayout title="Social & CSR">
       <div className="flex flex-col gap-6">
         {/* Tab Selector */}
-        <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'bg-brand-primary text-neutral-surface shadow-sm'
-                  : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="bg-neutral-surface rounded-2xl p-1 border border-neutral-border/60 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex gap-2 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer ${
+                  activeTab === tab.id
+                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10'
+                    : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg/50'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
@@ -88,31 +93,35 @@ const GamificationDashboard = () => {
   const [activeTab, setActiveTab] = useState('challenges');
 
   const tabs = [
-    { id: 'challenges', label: '🏆 Challenges', component: <ChallengeBoard /> },
-    { id: 'participation', label: '🏃‍♂️ Challenge Participation', component: <ChallengeParticipationBoard /> },
-    { id: 'badges', label: '🏅 Badge Gallery', component: <BadgeGallery /> },
-    { id: 'rewards', label: '🎁 Rewards Catalog', component: <RewardCatalog /> },
-    { id: 'leaderboard', label: '📈 Leaderboard', component: <Leaderboard /> },
+    { id: 'challenges', label: 'Challenges', icon: Trophy, component: <ChallengeBoard /> },
+    { id: 'participation', label: 'Challenge Participation', icon: Activity, component: <ChallengeParticipationBoard /> },
+    { id: 'badges', label: 'Badge Gallery', icon: Award, component: <BadgeGallery /> },
+    { id: 'rewards', label: 'Rewards Catalog', icon: Gift, component: <RewardCatalog /> },
+    { id: 'leaderboard', label: 'Leaderboard', icon: TrendingUp, component: <Leaderboard /> },
   ];
 
   return (
     <AppLayout title="Gamification">
       <div className="flex flex-col gap-6">
         {/* Tab Selector */}
-        <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'bg-brand-primary text-neutral-surface shadow-sm'
-                  : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="bg-neutral-surface rounded-2xl p-1 border border-neutral-border/60 shadow-[0_2px_8px_rgba(0,0,0,0.01)] flex gap-2 overflow-x-auto">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer ${
+                  activeTab === tab.id
+                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10'
+                    : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg/50'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab Content */}
@@ -128,24 +137,27 @@ const GamificationDashboard = () => {
 
 const ReportsPage = () => {
   const tabs = [
-    { to: '/reports/overview', label: 'Fixed Reports' },
-    { to: '/reports/custom', label: 'Custom Builder' },
+    { to: '/reports/overview', label: 'Fixed Reports', icon: FileText },
+    { to: '/reports/custom', label: 'Custom Builder', icon: Sliders },
   ];
   return (
     <AppLayout title="Reports & Analytics">
       <div>
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-6">
-          {tabs.map(({ to, label }) => (
+        <div className="flex gap-1.5 bg-neutral-surface p-1 rounded-2xl border border-neutral-border/60 shadow-[0_2px_8px_rgba(0,0,0,0.01)] w-fit mb-6">
+          {tabs.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                  isActive ? 'bg-white shadow-sm text-brand-primary' : 'text-gray-500 hover:text-neutral-text'
+                `px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  isActive
+                    ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/10'
+                    : 'text-neutral-textMuted hover:text-neutral-text hover:bg-neutral-bg/50'
                 }`
               }
             >
-              {label}
+              <Icon className="w-4 h-4" />
+              <span>{label}</span>
             </NavLink>
           ))}
         </div>
