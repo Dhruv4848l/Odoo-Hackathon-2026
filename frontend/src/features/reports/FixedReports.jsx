@@ -62,7 +62,7 @@ const FixedReports = () => {
   };
 
   return (
-    <AppLayout title="Fixed Reports">
+    <div className="space-y-6">
       <div className="mb-6">
         <p className="text-sm text-gray-500">
           Download pre-built standard reports. Data is pulled live from the database.
@@ -110,7 +110,7 @@ const FixedReports = () => {
           </div>
         ))}
       </div>
-    </AppLayout>
+    </div>
   );
 };
 
