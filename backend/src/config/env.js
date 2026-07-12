@@ -3,14 +3,15 @@ const path = require('path');
 
 // Load environment variables from .env file (first search root, then local backend directory)
 dotenv.config({ path: path.join(__dirname, '../../../.env') });
-dotenv.config(); // fallback to local backend folder .env
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config(); // fallback to process.env (Render/Vercel inject vars directly)
 
 const requiredEnv = ['MONGODB_URI', 'JWT_SECRET'];
 const missingEnv = requiredEnv.filter((envVar) => !process.env[envVar]);
 
 if (missingEnv.length > 0) {
   console.error(`\x1b[31m[CONFIG ERROR] Missing required environment variables: ${missingEnv.join(', ')}\x1b[0m`);
-  console.error('\x1b[33mPlease check that your root .env file exists and contains these variables.\x1b[0m');
+  console.error('\x1b[33mPlease check that your .env file or hosting environment variables contain these values.\x1b[0m');
   process.exit(1);
 }
 

@@ -14,7 +14,7 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = socketIo(server, {
   cors: {
-    origin: env.CLIENT_URL,
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
@@ -26,9 +26,19 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Parse allowed origins (supports comma-separated list for multiple frontends)
+const allowedOrigins = env.CLIENT_URL.split(',').map(u => u.trim());
+
 // Middleware
 app.use(cors({
-  origin: env.CLIENT_URL,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, health checks)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Allow all in hackathon context
+  },
   credentials: true,
 }));
 app.use(express.json());
