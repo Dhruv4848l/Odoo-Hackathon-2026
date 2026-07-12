@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  /* Canopy Palette Custom Colors */
+  --color-brand-primary: #1F5C4D;     /* Deep forest green (Environmental & Core) */
+  --color-brand-secondary: #C9862A;   /* Warm gold (Gamification & Rewards) */
+  --color-brand-info: #2E6DA4;        /* Slate blue (Social module) */
+  --color-brand-alert: #8E3B46;       /* Muted maroon (Governance & Compliance) */
+
+  /* Neutral overrides */
+  --color-neutral-bg: #F7F5F0;        /* Warm off-white */
+  --color-neutral-surface: #FFFFFF;   /* Card surface white */
+  --color-neutral-text: #2B2B2B;      /* Near-black ink */
+
+  /* Module color-coding */
+  --color-module-environmental: #1F5C4D;
+  --color-module-social: #2E6DA4;
+  --color-module-governance: #8E3B46;
+  --color-module-gamification: #C9862A;
+
+  /* Typography */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Poppins", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+}
