@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import axiosClient from '../../api/axiosClient';
 import { useSelector } from 'react-redux';
+import EnvironmentalHeader from './EnvironmentalHeader';
 
 const COLORS = ['#1F5C4D', '#2E6DA4', '#C9862A', '#8E3B46', '#4CAF50', '#FF9800'];
 
@@ -118,6 +119,7 @@ export default function EnvironmentalDashboard() {
   return (
     <div className="p-6 bg-neutral-bg min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
+        <EnvironmentalHeader />
 
         {/* Header */}
         <div className="flex flex-wrap justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-md border border-neutral-border/60 gap-4">

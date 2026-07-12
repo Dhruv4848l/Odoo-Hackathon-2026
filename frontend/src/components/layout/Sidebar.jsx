@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { to: '/social', icon: Users, label: 'Social & CSR', devOwner: 'B' },
   { to: '/governance', icon: ShieldCheck, label: 'Governance', devOwner: 'C' },
   { to: '/reports', icon: FileText, label: 'Reports', devOwner: 'D' },
+  { to: '/admin', icon: ShieldCheck, label: 'Admin Console', devOwner: 'A', adminOnly: true },
   { to: '/settings', icon: Settings, label: 'Settings', devOwner: 'D', adminOnly: true },
 ];
 

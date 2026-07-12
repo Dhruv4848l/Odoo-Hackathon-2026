@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosClient from '../../api/axiosClient';
 import { useSelector } from 'react-redux';
+import EnvironmentalHeader from './EnvironmentalHeader';
 
 export default function EmissionFactorConfig() {
   const { user } = useSelector((state) => state.auth);
@@ -107,6 +108,7 @@ export default function EmissionFactorConfig() {
   return (
     <div className="p-6 bg-neutral-bg min-h-screen">
       <div className="max-w-5xl mx-auto space-y-6">
+        <EnvironmentalHeader />
 
         {/* Header */}
         <div className="flex justify-between items-center bg-neutral-surface p-6 rounded-xl shadow-md border border-neutral-border/60">
