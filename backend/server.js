@@ -2,6 +2,8 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const socketIo = require('socket.io');
+const path = require('path');
+const fs = require('fs');
 const connectDB = require('./src/config/db');
 const env = require('./src/config/env');
 
@@ -18,6 +20,12 @@ const io = socketIo(server, {
   },
 });
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Middleware
 app.use(cors({
   origin: env.CLIENT_URL,
@@ -27,7 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve evidence files uploads directory statically
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(uploadsDir));
 
 // DB connection
 connectDB();
@@ -45,7 +53,12 @@ app.use('/api/health', (req, res) => {
 // WebSocket Event handler stub
 io.on('connection', (socket) => {
   console.log(`[SOCKET] User connected: ${socket.id}`);
-  
+
+  socket.on('join-room', (userId) => {
+    socket.join(`user-${userId}`);
+    console.log(`[SOCKET] User ${userId} joined their notification room`);
+  });
+
   socket.on('disconnect', () => {
     console.log(`[SOCKET] User disconnected: ${socket.id}`);
   });
@@ -56,6 +69,39 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// API Routes
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Auth & Core (Dev A)
+app.use('/api/auth', require('./src/routes/auth.routes'));
+app.use('/api/departments', require('./src/routes/department.routes'));
+
+// Environmental Module (Dev A)
+app.use('/api/emission-factors', require('./src/routes/emissionFactor.routes'));
+app.use('/api/carbon-transactions', require('./src/routes/carbonTransaction.routes'));
+app.use('/api/environmental-goals', require('./src/routes/environmentalGoal.routes'));
+
+// ── Dev B — Social & Gamification ──
+app.use('/api/csr-activities', require('./src/routes/csrActivity.routes'));
+app.use('/api/participation', require('./src/routes/participation.routes'));
+app.use('/api/challenges', require('./src/routes/challenge.routes'));
+app.use('/api/badges', require('./src/routes/badge.routes'));
+app.use('/api/rewards', require('./src/routes/reward.routes'));
+app.use('/api/leaderboard', require('./src/routes/leaderboard.routes'));
+
+// Governance Module (Dev C)
+app.use('/api/policies', require('./src/routes/policy.routes'));
+app.use('/api/acknowledgements', require('./src/routes/acknowledgement.routes'));
+app.use('/api/audits', require('./src/routes/audit.routes'));
+app.use('/api/compliance-issues', require('./src/routes/complianceIssue.routes'));
+app.use('/api/notifications', require('./src/routes/notification.routes'));
+
+// Scoring & Reports (Dev D)
+app.use('/api/scores', require('./src/routes/score.routes'));
+app.use('/api/settings', require('./src/routes/settings.routes'));
+app.use('/api/reports', require('./src/routes/report.routes'));
 
 // Global Error Handler Middleware
 app.use((err, req, res, next) => {

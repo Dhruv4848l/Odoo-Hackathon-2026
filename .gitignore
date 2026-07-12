@@ -62,3 +62,5 @@ dist-ssr/
 # Multer evidence file uploads directory
 backend/src/uploads/
 backend/uploads/
+
+DEVELOPER_B_CHECKLIST.md

@@ -1,19 +1,31 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const auth = require('../middleware/auth.middleware');
+const role = require('../middleware/role.middleware');
+const controller = require('../controllers/challenge.controller');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from challenge' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from challenge' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in challenge' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in challenge' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in challenge' }),
-};
+// Configure multer for proof uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `challenge-proof-${Date.now()}${ext}`);
+  },
+});
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+// All routes require authentication
+router.use(auth);
 
 router.get('/', controller.getAll);
 router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+router.post('/', role(['Admin', 'Manager']), controller.create);
+router.put('/:id', role(['Admin', 'Manager']), controller.update);
+router.post('/:id/status', role(['Admin', 'Manager']), controller.changeStatus);
+router.post('/:id/join', controller.join);
+router.post('/:id/submit', upload.single('proof'), controller.submitProof);
+router.post('/:id/review', role(['Admin', 'Manager']), controller.review);
 
 module.exports = router;
