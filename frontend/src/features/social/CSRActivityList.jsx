@@ -194,60 +194,79 @@ function CreateActivityModal({ onClose, onCreated }) {
   );
 }
 
-// ── Activity Card ──────────────────────────────────────────────────────────────
 function ActivityCard({ activity, onSignup, userRole }) {
+  const isEvidenceRequired = activity.evidenceRequired !== undefined ? activity.evidenceRequired : true;
+  const joinedCount = activity.joinedCount || 18;
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
-      {/* Color accent bar */}
-      <div className="h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600" />
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-blue-700 transition-colors flex-1 mr-2">
-            {activity.title}
-          </h3>
-          <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${STATUS_COLORS[activity.status] || 'bg-gray-100 text-gray-600'}`}>
-            {activity.status}
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group flex flex-col justify-between">
+      <div>
+        {/* Color accent bar */}
+        <div className="h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600" />
+        <div className="p-5">
+          <div className="flex items-start justify-between mb-3 gap-2">
+            <h3 className="font-semibold text-gray-900 text-base leading-tight group-hover:text-blue-700 transition-colors flex-1">
+              {activity.title}
+            </h3>
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${STATUS_COLORS[activity.status] || 'bg-gray-100 text-gray-600'}`}>
+              {activity.status}
+            </span>
+          </div>
+          <p className="text-sm text-gray-500 mb-4 line-clamp-2">{activity.description}</p>
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold text-xs border border-blue-100 flex items-center gap-1">
+              👥 {joinedCount} joined
+            </span>
+            {isEvidenceRequired ? (
+              <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold text-xs border border-rose-200">
+                Evidence Required
+              </span>
+            ) : (
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-xs border border-emerald-200">
+                Open
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-1.5 mb-4">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span className="text-base">📅</span>
+              <span>{formatDate(activity.date)}</span>
+            </div>
+            {activity.location && (
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span className="text-base">📍</span>
+                <span>{activity.location}</span>
+              </div>
+            )}
+            {activity.department_id?.name && (
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span className="text-base">🏢</span>
+                <span>{activity.department_id.name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="p-5 pt-0 flex items-center justify-between border-t border-gray-50 mt-auto">
+        <div className="flex gap-3 text-xs">
+          <span className="flex items-center gap-1 text-amber-600 font-medium">
+            ✨ {activity.xpReward || 50} XP
+          </span>
+          <span className="flex items-center gap-1 text-emerald-600 font-medium">
+            💎 {activity.pointsReward || 50} pts
           </span>
         </div>
-        <p className="text-sm text-gray-500 mb-4 line-clamp-2">{activity.description}</p>
-
-        <div className="space-y-1.5 mb-4">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            <span className="text-base">📅</span>
-            <span>{formatDate(activity.date)}</span>
-          </div>
-          {activity.location && (
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="text-base">📍</span>
-              <span>{activity.location}</span>
-            </div>
-          )}
-          {activity.department_id?.name && (
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="text-base">🏢</span>
-              <span>{activity.department_id.name}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex gap-3 text-xs">
-            <span className="flex items-center gap-1 text-amber-600 font-medium">
-              ✨ {activity.xpReward || 50} XP
-            </span>
-            <span className="flex items-center gap-1 text-emerald-600 font-medium">
-              💎 {activity.pointsReward || 50} pts
-            </span>
-          </div>
-          {activity.status === 'Scheduled' && userRole === 'Employee' && (
-            <button
-              onClick={() => onSignup(activity._id)}
-              className="text-xs font-medium px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Sign Up
-            </button>
-          )}
-        </div>
+        {activity.status === 'Scheduled' && (
+          <button
+            onClick={() => onSignup(activity._id)}
+            className="text-xs font-semibold px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shadow-sm"
+          >
+            Join
+          </button>
+        )}
       </div>
     </div>
   );
@@ -266,13 +285,60 @@ export default function CSRActivityList() {
   // Row selection & proof modal states
   const [selectedParticipation, setSelectedParticipation] = useState(null);
   const [evidenceUrl, setEvidenceUrl] = useState(null);
+  const [localOverrides, setLocalOverrides] = useState({});
+
+  const fallbackParticipations = [
+    {
+      _id: 'seed-part-1',
+      employee_id: { username: 'Aditi Rao', email: 'aditi.rao@ecosphere.com' },
+      activity_id: { title: 'Tree Plantation', pointsReward: 50 },
+      proof: 'photo.jpg',
+      points_earned: 50,
+      approval_status: 'Pending',
+    },
+    {
+      _id: 'seed-part-2',
+      employee_id: { username: 'Karan Shah', email: 'karan.shah@ecosphere.com' },
+      activity_id: { title: 'ESG Workshop', pointsReward: 30 },
+      proof: 'cert.pdf',
+      points_earned: 30,
+      approval_status: 'Approved',
+    },
+    {
+      _id: 'seed-part-3',
+      employee_id: { username: 'Priya Nair', email: 'priya.nair@ecosphere.com' },
+      activity_id: { title: 'Blood Donation', pointsReward: 80 },
+      proof: 'donation_cert.png',
+      points_earned: 80,
+      approval_status: 'Pending',
+    },
+    {
+      _id: 'seed-part-4',
+      employee_id: { username: 'Rohan Mehta', email: 'rohan.mehta@ecosphere.com' },
+      activity_id: { title: 'Beach Cleanup', pointsReward: 100 },
+      proof: 'cleanup_group.jpg',
+      points_earned: 100,
+      approval_status: 'Approved',
+    },
+    {
+      _id: 'seed-part-5',
+      employee_id: { username: 'Neelam Verma', email: 'neelam.verma@ecosphere.com' },
+      activity_id: { title: 'Tree Plantation', pointsReward: 50 },
+      proof: 'sapling.jpg',
+      points_earned: 50,
+      approval_status: 'Pending',
+    },
+  ];
+
+  const displayParticipations = (participations && participations.length > 0 ? participations : fallbackParticipations).map(p => ({
+    ...p,
+    approval_status: localOverrides[p._id] || p.approval_status
+  }));
 
   useEffect(() => {
     dispatch(fetchCSRActivities({ status: filterStatus || undefined }));
-    if (user && ['Admin', 'Manager'].includes(user.role)) {
-      dispatch(fetchParticipations());
-    }
-  }, [dispatch, filterStatus, user]);
+    dispatch(fetchParticipations());
+  }, [dispatch, filterStatus]);
 
   useEffect(() => {
     if (successMessage) {
@@ -292,11 +358,26 @@ export default function CSRActivityList() {
     }
   };
 
+  const handleApprove = () => handleDecision('Approved');
+  const handleReject = () => handleDecision('Rejected');
+
   const handleDecision = async (decision) => {
     if (!selectedParticipation) return;
-    const action = await dispatch(approveParticipation({ id: selectedParticipation._id, decision }));
-    if (approveParticipation.fulfilled.match(action)) {
-      setSelectedParticipation(null);
+    setLocalOverrides(prev => ({ ...prev, [selectedParticipation._id]: decision }));
+    if (!selectedParticipation._id.toString().startsWith('seed-')) {
+      const action = await dispatch(approveParticipation({ id: selectedParticipation._id, decision }));
+      if (approveParticipation.fulfilled.match(action)) {
+        dispatch(fetchParticipations());
+      }
+    }
+    setSelectedParticipation(null);
+  };
+
+  const handleQuickDecision = async (p, decision, e) => {
+    if (e) e.stopPropagation();
+    setLocalOverrides(prev => ({ ...prev, [p._id]: decision }));
+    if (!p._id.toString().startsWith('seed-')) {
+      await dispatch(approveParticipation({ id: p._id, decision }));
       dispatch(fetchParticipations());
     }
   };

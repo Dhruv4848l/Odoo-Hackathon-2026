@@ -10,6 +10,8 @@ const CSRActivitySchema = new mongoose.Schema({
   xpReward: { type: Number, default: 50 },
   pointsReward: { type: Number, default: 50 },
   maxParticipants: { type: Number },
+  joinedCount: { type: Number, default: 0 },
+  evidenceRequired: { type: Boolean, default: true },
   status: {
     type: String,
     enum: ['Scheduled', 'Completed', 'Cancelled'],

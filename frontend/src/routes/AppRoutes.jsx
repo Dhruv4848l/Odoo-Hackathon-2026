@@ -323,7 +323,9 @@ export const AppRoutes = () => {
         path="/settings"
         element={
           <PrivateRoute allowedRoles={['Admin']}>
-            <SettingsScreen />
+            <AppLayout title="Settings">
+              <SettingsScreen />
+            </AppLayout>
           </PrivateRoute>
         }
       />

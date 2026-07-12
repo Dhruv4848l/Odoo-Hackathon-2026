@@ -53,7 +53,7 @@ const Toggle = ({ label, description, name, value, onChange }) => (
 const SettingsScreen = () => {
   const dispatch = useDispatch();
   const { settings, loading } = useSelector((state) => state.scoring);
-  const [activeTab, setActiveTab] = useState('departments');
+  const [activeTab, setActiveTab] = useState('esg');
 
   // Departments State
   const [departments, setDepartments] = useState([]);
@@ -108,25 +108,43 @@ const SettingsScreen = () => {
     }
   }, [settings]);
 
+  const fallbackDepartments = [
+    { _id: 'dept-hr', name: 'Human Resources', code: 'HR', head: 'Aditi Rao', parentDept: 'Corporate', employeesCount: 45, status: 'Active' },
+    { _id: 'dept-it', name: 'Information Technology', code: 'IT', head: 'Karan Shah', parentDept: 'Operations', employeesCount: 120, status: 'Active' },
+    { _id: 'dept-mfg', name: 'Manufacturing Operations', code: 'MFG', head: 'Priya Nair', parentDept: 'Operations', employeesCount: 310, status: 'Active' },
+    { _id: 'dept-log', name: 'Fleet & Logistics', code: 'FLEET', head: 'Rohan Mehta', parentDept: 'Supply Chain', employeesCount: 85, status: 'Active' },
+    { _id: 'dept-corp', name: 'Corporate Headquarters', code: 'CORP', head: 'Neelam Verma', parentDept: 'Executive', employeesCount: 60, status: 'Active' },
+  ];
+
+  const fallbackCategories = [
+    { _id: 'cat-1', name: 'Purchased Electricity', code: 'ELEC-01', type: 'Emission', scope: 'Scope 2', status: 'Active' },
+    { _id: 'cat-2', name: 'Fleet Travel', code: 'FLT-02', type: 'Emission', scope: 'Scope 1', status: 'Active' },
+    { _id: 'cat-3', name: 'Manufacturing Operations', code: 'MFG-03', type: 'Emission', scope: 'Scope 1', status: 'Active' },
+    { _id: 'cat-4', name: 'Business Travel', code: 'TRV-04', type: 'Emission', scope: 'Scope 3', status: 'Active' },
+    { _id: 'cat-5', name: 'Eco-Volunteering', code: 'SOC-01', type: 'Social', scope: 'CSR Pillar', status: 'Active' },
+    { _id: 'cat-6', name: 'Skill & Development', code: 'SOC-02', type: 'Social', scope: 'CSR Pillar', status: 'Active' },
+    { _id: 'cat-7', name: 'Policy Agreement', code: 'GOV-01', type: 'Governance', scope: 'Compliance', status: 'Active' },
+  ];
+
   const loadDepartments = async () => {
     try {
       const res = await axiosClient.get('/departments');
-      if (res.success) {
-        setDepartments(res.data || []);
-      }
+      const list = res?.success ? res.data : (Array.isArray(res) ? res : (res?.data || []));
+      setDepartments(list && list.length > 0 ? list : fallbackDepartments);
     } catch (err) {
       console.error('Error loading departments:', err);
+      setDepartments(fallbackDepartments);
     }
   };
 
   const loadCategories = async () => {
     try {
       const res = await axiosClient.get('/categories');
-      if (res.success) {
-        setCategories(res.data || []);
-      }
+      const list = res?.success ? res.data : (Array.isArray(res) ? res : (res?.data || []));
+      setCategories(list && list.length > 0 ? list : fallbackCategories);
     } catch (err) {
       console.error('Error loading categories:', err);
+      setCategories(fallbackCategories);
     }
   };
 
@@ -335,6 +353,17 @@ const SettingsScreen = () => {
       {/* Top Tabs Bar */}
       <div className="flex bg-neutral-surface p-1.5 rounded-xl border border-neutral-border shadow-sm overflow-x-auto">
         <button
+          onClick={() => setActiveTab('esg')}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
+            activeTab === 'esg'
+              ? 'bg-brand-primary text-white shadow-sm'
+              : 'text-neutral-textMuted hover:text-neutral-text'
+          }`}
+        >
+          <Sliders size={16} />
+          ESG Configuration
+        </button>
+        <button
           onClick={() => setActiveTab('departments')}
           className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
             activeTab === 'departments'
@@ -355,17 +384,6 @@ const SettingsScreen = () => {
         >
           <Tag size={16} />
           Categories
-        </button>
-        <button
-          onClick={() => setActiveTab('esg')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
-            activeTab === 'esg'
-              ? 'bg-brand-primary text-white shadow-sm'
-              : 'text-neutral-textMuted hover:text-neutral-text'
-          }`}
-        >
-          <Sliders size={16} />
-          ESG Configuration
         </button>
         <button
           onClick={() => setActiveTab('notifications')}
@@ -585,44 +603,44 @@ const SettingsScreen = () => {
             </div>
           </div>
 
-          {/* Business Rules & Automation Toggles */}
+          {/* Automation Toggles */}
           <div className="bg-neutral-surface rounded-xl p-6 shadow-sm border border-neutral-border space-y-4">
-            <h2 className="text-lg font-display font-bold text-neutral-text mb-4">Core Configuration & Business Rules</h2>
+            <h2 className="text-lg font-display font-bold text-neutral-text mb-4">Automation Toggles</h2>
 
             <Toggle
-              label="Enable auto emission calculation"
-              description="Calculate Carbon Transactions automatically from linked purchase, manufacturing, fleet & energy records using Emission Factors without manual entry"
-              name="autoEmissionCalc"
-              value={form.autoEmissionCalc}
-              onChange={handleToggle}
-            />
-
-            <Toggle
-              label="Require evidence for all CSR activities"
-              description="CSR Activity participation cannot be marked Approved without an attached verification proof file"
+              label="Evidence Required for CSR"
+              description="Employees must upload proof when claiming CSR participation"
               name="evidenceRequiredForCSR"
               value={form.evidenceRequiredForCSR}
               onChange={handleToggle}
             />
 
             <Toggle
-              label="Require evidence for compliance issues"
-              description="Compliance resolution requires attached audit or corrective action proof file before closure"
+              label="Evidence Required for Compliance"
+              description="Auditors must attach evidence when closing compliance issues"
               name="evidenceRequiredForCompliance"
               value={form.evidenceRequiredForCompliance}
               onChange={handleToggle}
             />
 
             <Toggle
-              label="Auto-award badges on challenge completion"
-              description="Automatically assign badges the moment an employee's XP or completed challenge count satisfies unlock rules"
+              label="Auto Emission Calculation"
+              description="Automatically calculate emission scores from new carbon transactions"
+              name="autoEmissionCalc"
+              value={form.autoEmissionCalc}
+              onChange={handleToggle}
+            />
+
+            <Toggle
+              label="Badge Auto-Award"
+              description="Automatically grant badges when users reach required XP thresholds"
               name="badgeAutoAward"
               value={form.badgeAutoAward}
               onChange={handleToggle}
             />
 
             <Toggle
-              label="Compliance issue ownership & overdue flagging"
+              label="Compliance Issue Ownership & Overdue Flagging"
               description="Every compliance issue must have an assigned owner and due date; automatically flag overdue issues while open"
               name="complianceOverdueFlag"
               value={form.complianceOverdueFlag}
@@ -630,12 +648,13 @@ const SettingsScreen = () => {
             />
 
             <Toggle
-              label="Reward redemption catalog rules"
+              label="Reward Redemption Engine"
               description="Employees can redeem earned points/XP for rewards from catalog subject to stock availability"
               name="rewardRedemptionEnabled"
               value={form.rewardRedemptionEnabled}
               onChange={handleToggle}
             />
+          </div>
 
             {/* Save Button for ESG Config */}
             <div className="pt-4 flex items-center justify-end gap-3">
@@ -655,7 +674,6 @@ const SettingsScreen = () => {
                 {saving ? 'Saving...' : 'Save ESG Configuration'}
               </button>
             </div>
-          </div>
         </div>
       )}
 

@@ -144,17 +144,62 @@ async function seedDatabase() {
     const seededFactors = await EmissionFactor.insertMany(emissionFactors);
     console.log(`[SEED] Successfully seeded ${seededFactors.length} emission factors.`);
 
-    // --- Admin User ---
-    console.log('[SEED] Seeding Admin User...');
-    const hrDept = seededDepts.find(d => d.code === 'HR');
+    // --- Admin User & Sample Employees ---
+    console.log('[SEED] Seeding Admin & Employee Users...');
+    const hrDept = seededDepts.find(d => d.code === 'HR') || seededDepts[0];
+    const mfgDept = seededDepts.find(d => d.code === 'MFG') || seededDepts[0];
+    const itDept = seededDepts.find(d => d.code === 'IT') || seededDepts[0];
+    const logDept = seededDepts.find(d => d.code === 'LOG') || seededDepts[0];
+
     const adminUser = await User.create({
       username: 'admin',
       email: 'admin@gmail.com',
-      password: 'admin@gmail.com', // Will be hashed automatically by user model hooks
+      password: 'admin@gmail.com',
       role: 'Admin',
       department: hrDept._id,
     });
-    console.log(`[SEED] Seeded Admin user: ${adminUser.username} (${adminUser.email})`);
+
+    const aditiUser = await User.create({
+      username: 'Aditi Rao',
+      email: 'aditi.rao@ecosphere.com',
+      password: 'Password123!',
+      role: 'Employee',
+      department: hrDept._id,
+    });
+
+    const karanUser = await User.create({
+      username: 'Karan Shah',
+      email: 'karan.shah@ecosphere.com',
+      password: 'Password123!',
+      role: 'Employee',
+      department: itDept._id,
+    });
+
+    const priyaUser = await User.create({
+      username: 'Priya Nair',
+      email: 'priya.nair@ecosphere.com',
+      password: 'Password123!',
+      role: 'Employee',
+      department: mfgDept._id,
+    });
+
+    const rohanUser = await User.create({
+      username: 'Rohan Mehta',
+      email: 'rohan.mehta@ecosphere.com',
+      password: 'Password123!',
+      role: 'Employee',
+      department: logDept._id,
+    });
+
+    const neelamUser = await User.create({
+      username: 'Neelam Verma',
+      email: 'neelam.verma@ecosphere.com',
+      password: 'Password123!',
+      role: 'Employee',
+      department: hrDept._id,
+    });
+
+    console.log(`[SEED] Seeded Admin & 5 Employee users.`);
 
     // --- Dev B: Badges ---
     console.log('[SEED] Seeding Badges...');
@@ -209,49 +254,117 @@ async function seedDatabase() {
       console.log(`[SEED] Successfully seeded ${seededChallenges.length} challenges.`);
     }
 
-    // --- Dev B: CSR Activities ---
+    // --- Dev B: CSR Activities (matching wireframe Image 1) ---
     const CSRActivity = require('../src/models/CSRActivity');
     await CSRActivity.deleteMany({});
     const sampleCSRs = [
       {
-        title: 'Community Tree Planting Drive',
-        description: 'Planting 500 native trees in the metropolitan green belt.',
-        category_id: ecoVolunteeringCat?._id,
-        department_id: hrDept?._id,
+        title: 'Tree Plantation',
+        description: 'Planting 500 native trees in the metropolitan green belt and restoring biodiversity.',
+        category_id: ecoVolunteeringCat?._id || seededCategories[0]._id,
+        department_id: hrDept?._id || seededDepts[0]._id,
         date: new Date(Date.now() + 7 * 24 * 3600 * 1000),
         location: 'City Botanical Garden',
-        xpReward: 120,
-        pointsReward: 100,
-        maxParticipants: 30,
+        xpReward: 50,
+        pointsReward: 50,
+        maxParticipants: 50,
+        joinedCount: 24,
+        evidenceRequired: true,
         status: 'Scheduled',
       },
       {
-        title: 'Annual Coastal & Beach Cleanup',
-        description: 'Removing plastic debris along the 5km coastal shoreline.',
-        category_id: ecoVolunteeringCat?._id,
-        department_id: hrDept?._id,
+        title: 'Blood Donation',
+        description: 'Annual corporate blood donation camp in partnership with Red Cross Society.',
+        category_id: ecoVolunteeringCat?._id || seededCategories[0]._id,
+        department_id: hrDept?._id || seededDepts[0]._id,
+        date: new Date(Date.now() + 10 * 24 * 3600 * 1000),
+        location: 'Corporate Health Wing',
+        xpReward: 80,
+        pointsReward: 70,
+        maxParticipants: 40,
+        joinedCount: 18,
+        evidenceRequired: true,
+        status: 'Scheduled',
+      },
+      {
+        title: 'Beach Cleanup',
+        description: 'Removing plastic debris along the 5km coastal shoreline community initiative.',
+        category_id: ecoVolunteeringCat?._id || seededCategories[0]._id,
+        department_id: hrDept?._id || seededDepts[0]._id,
         date: new Date(Date.now() + 14 * 24 * 3600 * 1000),
         location: 'Sunset Beach',
-        xpReward: 150,
-        pointsReward: 120,
-        maxParticipants: 50,
+        xpReward: 100,
+        pointsReward: 100,
+        maxParticipants: 60,
+        joinedCount: 31,
+        evidenceRequired: false,
         status: 'Scheduled',
       },
       {
-        title: 'Corporate ESG & Net Zero Webinar',
-        description: 'Interactive session on reducing personal and corporate carbon footprints.',
-        category_id: skillDevCat?._id,
-        department_id: hrDept?._id,
+        title: 'ESG Workshop',
+        description: 'Interactive workshop on reducing personal and corporate carbon footprint.',
+        category_id: skillDevCat?._id || seededCategories[0]._id,
+        department_id: hrDept?._id || seededDepts[0]._id,
         date: new Date(Date.now() + 3 * 24 * 3600 * 1000),
         location: 'Virtual Zoom Hall',
-        xpReward: 50,
-        pointsReward: 40,
+        xpReward: 30,
+        pointsReward: 30,
         maxParticipants: 200,
+        joinedCount: 52,
+        evidenceRequired: false,
         status: 'Scheduled',
       },
     ];
-    await CSRActivity.insertMany(sampleCSRs);
-    console.log(`[SEED] Successfully seeded ${sampleCSRs.length} CSR activities.`);
+    const seededCSRs = await CSRActivity.insertMany(sampleCSRs);
+    console.log(`[SEED] Successfully seeded ${seededCSRs.length} CSR activities matching UI specifications.`);
+
+    // --- Dev B: Employee Participation Approval Queue ---
+    const EmployeeParticipation = require('../src/models/EmployeeParticipation');
+    await EmployeeParticipation.deleteMany({});
+    const sampleParticipations = [
+      {
+        employee_id: aditiUser._id,
+        activity_id: seededCSRs[0]._id, // Tree Plantation
+        proof: 'photo.jpg',
+        points_earned: 50,
+        approval_status: 'Pending',
+        completion_date: new Date(Date.now() - 2 * 3600 * 1000),
+      },
+      {
+        employee_id: karanUser._id,
+        activity_id: seededCSRs[3]._id, // ESG Workshop
+        proof: 'cert.pdf',
+        points_earned: 30,
+        approval_status: 'Approved',
+        completion_date: new Date(Date.now() - 24 * 3600 * 1000),
+      },
+      {
+        employee_id: priyaUser._id,
+        activity_id: seededCSRs[1]._id, // Blood Donation
+        proof: 'donation_cert.png',
+        points_earned: 80,
+        approval_status: 'Pending',
+        completion_date: new Date(Date.now() - 5 * 3600 * 1000),
+      },
+      {
+        employee_id: rohanUser._id,
+        activity_id: seededCSRs[2]._id, // Beach Cleanup
+        proof: 'cleanup_group.jpg',
+        points_earned: 100,
+        approval_status: 'Approved',
+        completion_date: new Date(Date.now() - 48 * 3600 * 1000),
+      },
+      {
+        employee_id: neelamUser._id,
+        activity_id: seededCSRs[0]._id, // Tree Plantation
+        proof: 'sapling.jpg',
+        points_earned: 50,
+        approval_status: 'Pending',
+        completion_date: new Date(Date.now() - 1 * 3600 * 1000),
+      },
+    ];
+    const seededParticipations = await EmployeeParticipation.insertMany(sampleParticipations);
+    console.log(`[SEED] Successfully seeded ${seededParticipations.length} Employee Participation approval queue records.`);
 
     // --- Dev C: Governance Policies ---
     const ESGPolicy = require('../src/models/ESGPolicy');
@@ -299,15 +412,15 @@ async function seedDatabase() {
     const naturalGas = seededFactors[2];
     const diesel = seededFactors[3];
 
-    const mfgDept = seededDepts.find(d => d.code === 'MFG');
-    const itDept = seededDepts.find(d => d.code === 'IT');
-    const fleetDept = seededDepts.find(d => d.code === 'FLEET');
+    const txMfgDept = seededDepts.find(d => d.code === 'MFG');
+    const txItDept = seededDepts.find(d => d.code === 'IT');
+    const txFleetDept = seededDepts.find(d => d.code === 'FLEET');
 
     // Create transactions that align with the goals in the screenshot
     const sampleTransactions = [
       // Fleet department goal target: 500, current: 390. FleetTravel category (diesel).
       {
-        department: fleetDept._id,
+        department: txFleetDept._id,
         user: adminUser._id,
         emissionFactor: diesel._id,
         activityValue: 390 / diesel.factor, // 145.52 litres
@@ -317,7 +430,7 @@ async function seedDatabase() {
       },
       // Manufacturing goal target: 120, current: 98. Manufacturing Operations category (natural gas).
       {
-        department: mfgDept._id,
+        department: txMfgDept._id,
         user: adminUser._id,
         emissionFactor: naturalGas._id,
         activityValue: 98 / naturalGas.factor, // 48.04 cubic metres
@@ -337,7 +450,7 @@ async function seedDatabase() {
       },
       // Other random transactions
       {
-        department: mfgDept._id,
+        department: txMfgDept._id,
         user: adminUser._id,
         emissionFactor: gridUK._id,
         activityValue: 1200,
@@ -346,7 +459,7 @@ async function seedDatabase() {
         description: 'Manufacturing facility power usage (2 months ago)',
       },
       {
-        department: itDept._id,
+        department: txItDept._id,
         user: adminUser._id,
         emissionFactor: gridUK._id,
         activityValue: 800,
@@ -363,7 +476,7 @@ async function seedDatabase() {
     await EnvironmentalGoal.deleteMany({});
     const sampleGoals = [
       {
-        department: fleetDept._id,
+        department: txFleetDept._id,
         category: fleetCat._id,
         targetValue: 500,
         currentValue: 390,
@@ -372,7 +485,7 @@ async function seedDatabase() {
         status: 'Active',
       },
       {
-        department: mfgDept._id,
+        department: txMfgDept._id,
         category: mfgCat._id,
         targetValue: 120,
         currentValue: 98,
