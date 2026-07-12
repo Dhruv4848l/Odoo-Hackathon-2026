@@ -159,7 +159,10 @@ exports.resolveIssue = async (req, res, next) => {
     // Trigger score rollup on issue resolution
     try {
       const scoringEngine = require('../services/scoring/scoringEngine');
-      await scoringEngine.recalculateDepartmentScore(issue.department);
+      const updatedScore = await scoringEngine.recalculateDepartmentScore(issue.department);
+      if (req.io) {
+        req.io.emit('SCORE_UPDATED', { department: issue.department, score: updatedScore });
+      }
     } catch (err) {
       console.error('[INTEGRATION WARNING] Failed to trigger score rollup:', err.message);
     }

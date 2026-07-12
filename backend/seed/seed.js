@@ -209,6 +209,124 @@ async function seedDatabase() {
       console.log(`[SEED] Successfully seeded ${seededChallenges.length} challenges.`);
     }
 
+    // --- Dev B: CSR Activities ---
+    const CSRActivity = require('../src/models/CSRActivity');
+    await CSRActivity.deleteMany({});
+    const sampleCSRs = [
+      {
+        title: 'Community Tree Planting Drive',
+        description: 'Planting 500 native trees in the metropolitan green belt.',
+        category_id: ecoVolunteeringCat?._id,
+        department_id: hrDept?._id,
+        date: new Date(Date.now() + 7 * 24 * 3600 * 1000),
+        location: 'City Botanical Garden',
+        xpReward: 120,
+        pointsReward: 100,
+        maxParticipants: 30,
+        status: 'Scheduled',
+      },
+      {
+        title: 'Annual Coastal & Beach Cleanup',
+        description: 'Removing plastic debris along the 5km coastal shoreline.',
+        category_id: ecoVolunteeringCat?._id,
+        department_id: hrDept?._id,
+        date: new Date(Date.now() + 14 * 24 * 3600 * 1000),
+        location: 'Sunset Beach',
+        xpReward: 150,
+        pointsReward: 120,
+        maxParticipants: 50,
+        status: 'Scheduled',
+      },
+      {
+        title: 'Corporate ESG & Net Zero Webinar',
+        description: 'Interactive session on reducing personal and corporate carbon footprints.',
+        category_id: skillDevCat?._id,
+        department_id: hrDept?._id,
+        date: new Date(Date.now() + 3 * 24 * 3600 * 1000),
+        location: 'Virtual Zoom Hall',
+        xpReward: 50,
+        pointsReward: 40,
+        maxParticipants: 200,
+        status: 'Scheduled',
+      },
+    ];
+    await CSRActivity.insertMany(sampleCSRs);
+    console.log(`[SEED] Successfully seeded ${sampleCSRs.length} CSR activities.`);
+
+    // --- Dev C: Governance Policies ---
+    const ESGPolicy = require('../src/models/ESGPolicy');
+    await ESGPolicy.deleteMany({});
+    const policyCat = seededCategories.find(c => c.name === 'Policy Agreement');
+    const samplePolicies = [
+      {
+        title: 'Global Anti-Bribery & Corruption Policy',
+        version: 'v2.4',
+        category: policyCat?._id || seededCategories[0]._id,
+        content: 'Mandatory compliance rules on ethical vendor interactions, gifts, and third-party transparency standards across all operational regions.',
+      },
+      {
+        title: 'Scope 1 & 2 Carbon Reporting Framework',
+        version: 'v1.1',
+        category: policyCat?._id || seededCategories[0]._id,
+        content: 'Standard operating procedure for logging monthly utility, manufacturing electricity, and fuel consumption accurately.',
+      },
+      {
+        title: 'Workplace Diversity & Inclusion Charter',
+        version: 'v3.0',
+        category: policyCat?._id || seededCategories[0]._id,
+        content: 'Guidelines ensuring fair, equitable, and safe workplace opportunities and respect across all corporate departments.',
+      },
+    ];
+    await ESGPolicy.insertMany(samplePolicies);
+    console.log(`[SEED] Successfully seeded ${samplePolicies.length} ESG policies.`);
+
+    // --- Dev A: Sample Historical Carbon Transactions ---
+    const CarbonTransaction = require('../src/models/CarbonTransaction');
+    await CarbonTransaction.deleteMany({});
+    const gridUK = seededFactors[0];
+    const diesel = seededFactors[3];
+    const mfgDept = seededDepts.find(d => d.code === 'MFG');
+    const itDept = seededDepts.find(d => d.code === 'IT');
+
+    const sampleTransactions = [
+      {
+        department: mfgDept._id,
+        user: adminUser._id,
+        emissionFactor: gridUK._id,
+        activityValue: 1200,
+        carbonEmitted: 1200 * gridUK.factor,
+        transactionDate: new Date(Date.now() - 60 * 24 * 3600 * 1000),
+        description: 'Manufacturing facility power usage (2 months ago)',
+      },
+      {
+        department: mfgDept._id,
+        user: adminUser._id,
+        emissionFactor: diesel._id,
+        activityValue: 450,
+        carbonEmitted: 450 * diesel.factor,
+        transactionDate: new Date(Date.now() - 30 * 24 * 3600 * 1000),
+        description: 'Fleet logistics diesel refill (last month)',
+      },
+      {
+        department: itDept._id,
+        user: adminUser._id,
+        emissionFactor: gridUK._id,
+        activityValue: 800,
+        carbonEmitted: 800 * gridUK.factor,
+        transactionDate: new Date(),
+        description: 'Data center electricity consumption (current month)',
+      },
+    ];
+    await CarbonTransaction.insertMany(sampleTransactions);
+    console.log(`[SEED] Successfully seeded ${sampleTransactions.length} historical carbon transactions.`);
+
+    // --- Dev D: Initial Score Recalculation ---
+    const { recalculateDepartmentScore } = require('../src/services/scoring/scoringEngine');
+    for (const d of seededDepts) {
+      await recalculateDepartmentScore(d._id);
+    }
+    console.log('[SEED] Recalculated initial ESG scores for all departments.');
+
     console.log('\x1b[32m[SEED] Database seeding complete!\x1b[0m');
     process.exit(0);
   } catch (error) {

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import AppLayout from '../../components/layout/AppLayout';
 import * as scoringApi from '../../api/scoring.api';
 import { Filter, Download, Loader2, FileSpreadsheet, FileText } from 'lucide-react';
 
@@ -47,135 +46,33 @@ const CustomReportBuilder = () => {
   return (
     <div className="max-w-2xl space-y-6">
       <p className="text-sm text-gray-500">
-        Build a custom report by selecting filters below, then export as CSV or Excel.
+        Build a custom report by selecting filters below, then export as CSV, Excel, or PDF.
       </p>
 
       {/* Filter Panel */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-5">
         <div className="flex items-center gap-2 mb-2">
           <Filter size={16} className="text-brand-primary" />
-          <h2 className="text-base font-display font-semibold text-neutral-text">Report Filters</h2>
+          <h2 className="text-base font-semibold text-neutral-text">Report Filters</h2>
         </div>
 
-          {/* Module selector */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-text mb-1">ESG Module</label>
-            <div className="flex flex-wrap gap-2">
-              {MODULES.map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setFilters((prev) => ({ ...prev, module: m }))}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                    filters.module === m
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Date Range */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">From</label>
-              <input
-                type="date"
-                name="dateFrom"
-                value={filters.dateFrom}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">To</label>
-              <input
-                type="date"
-                name="dateTo"
-                value={filters.dateTo}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-          </div>
-
-          {/* Additional Filters */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">Department</label>
-              <input
-                type="text"
-                name="department"
-                placeholder="e.g. Engineering"
-                value={filters.department}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">Employee</label>
-              <input
-                type="text"
-                name="employee"
-                placeholder="e.g. John Doe"
-                value={filters.employee}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">Challenge</label>
-              <input
-                type="text"
-                name="challenge"
-                placeholder="e.g. Zero Waste Week"
-                value={filters.challenge}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-neutral-text mb-1">ESG Category</label>
-              <input
-                type="text"
-                name="category"
-                placeholder="e.g. Waste Reduction"
-                value={filters.category}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
-              />
-            </div>
-          </div>
-
-          {/* Format selector */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-text mb-1">Export Format</label>
-            <div className="flex gap-3">
-              {FORMATS.map((f) => (
-                <label
-                  key={f}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-all text-sm ${
-                    filters.format === f
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="format"
-                    value={f}
-                    checked={filters.format === f}
-                    onChange={handleChange}
-                    className="hidden"
-                  />
-                  {f === 'CSV' ? <FileText size={14} /> : f === 'Excel' ? <FileSpreadsheet size={14} /> : <Download size={14} />}
-                  {f}
-                </label>
-              ))}
-            </div>
-          </div>
+        {/* Module selector */}
+        <div>
+          <label className="block text-sm font-medium text-neutral-text mb-1">ESG Module</label>
+          <div className="flex flex-wrap gap-2">
+            {MODULES.map((m) => (
+              <button
+                key={m}
+                onClick={() => setFilters((prev) => ({ ...prev, module: m }))}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  filters.module === m
+                    ? 'bg-brand-primary text-white border-brand-primary'
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {m}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -203,7 +100,55 @@ const CustomReportBuilder = () => {
           </div>
         </div>
 
-        {/* Format selector */}
+        {/* Additional Filters */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">Department</label>
+            <input
+              type="text"
+              name="department"
+              placeholder="e.g. Engineering"
+              value={filters.department}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">Employee</label>
+            <input
+              type="text"
+              name="employee"
+              placeholder="e.g. John Doe"
+              value={filters.employee}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">Challenge</label>
+            <input
+              type="text"
+              name="challenge"
+              placeholder="e.g. Zero Waste Week"
+              value={filters.challenge}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-text mb-1">ESG Category</label>
+            <input
+              type="text"
+              name="category"
+              placeholder="e.g. Waste Reduction"
+              value={filters.category}
+              onChange={handleChange}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-neutral-text focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+            />
+          </div>
+        </div>
+
+        {/* Export Format selector */}
         <div>
           <label className="block text-sm font-medium text-neutral-text mb-1">Export Format</label>
           <div className="flex gap-3">
@@ -224,7 +169,7 @@ const CustomReportBuilder = () => {
                   onChange={handleChange}
                   className="hidden"
                 />
-                {f === 'CSV' ? <FileText size={14} /> : <FileSpreadsheet size={14} />}
+                {f === 'CSV' ? <FileText size={14} /> : f === 'Excel' ? <FileSpreadsheet size={14} /> : <Download size={14} />}
                 {f}
               </label>
             ))}
@@ -236,7 +181,7 @@ const CustomReportBuilder = () => {
       <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-sm text-green-800">
         <p className="font-medium mb-1">Export Preview</p>
         <p>
-          Module: <strong>{filters.module}</strong> &nbsp;|&nbsp; Format:{' '}
+          Module: <strong>{filters.module}</strong>&nbsp;|&nbsp; Format:{' '}
           <strong>{filters.format}</strong>
           {filters.dateFrom && ` | From: ${filters.dateFrom}`}
           {filters.dateTo && ` → ${filters.dateTo}`}

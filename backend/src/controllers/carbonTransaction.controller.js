@@ -5,15 +5,18 @@ const User = require('../models/User');
 const Settings = require('../models/Settings');
 const { validateRefExists } = require('../services/validation/refIntegrity');
 
-/**
- * Placeholder stub for Dev D's department score recalculation hook.
- * When Dev D implements this, they should provide:
- *   recalculateDepartmentScore(departmentId) -> Promise<void>
- * This stub ensures no breakage until that implementation is wired in.
- */
-const recalculateDepartmentScore = async (departmentId) => {
-  // TODO: wire Dev D's scoring engine here when integrated
-  console.log(`[SCORE] Recalculation triggered for department: ${departmentId}`);
+const { recalculateDepartmentScore: engineRecalculate } = require('../services/scoring/scoringEngine');
+
+const recalculateDepartmentScore = async (departmentId, io) => {
+  try {
+    const score = await engineRecalculate(departmentId);
+    if (io) {
+      io.emit('SCORE_UPDATED', { department: departmentId, score });
+    }
+    console.log(`[SCORE] Recalculated score for department: ${departmentId}`);
+  } catch (err) {
+    console.error(`[SCORE RECALC ERROR] ${err.message}`);
+  }
 };
 
 // @desc    Get all carbon transactions
@@ -141,7 +144,7 @@ exports.createCarbonTransaction = async (req, res) => {
     ]);
 
     // Notify scoring engine
-    await recalculateDepartmentScore(department);
+    await recalculateDepartmentScore(department, req.io);
 
     res.status(201).json({ success: true, data: populated });
   } catch (error) {
@@ -160,21 +163,28 @@ exports.updateCarbonTransaction = async (req, res) => {
     }
 
     // Only allow the owner or Admin/Manager to edit
-    if (
-      req.user.role === 'Employee' &&
-      existing.user.toString() !== req.user._id.toString()
-    ) {
-      return res.status(403).json({ success: false, message: 'Not authorized to update this transaction.' });
+    const isOwner = existing.user.toString() === req.user._id.toString();
+    const isAdminOrManager = ['Admin', 'Manager'].includes(req.user.role);
+    if (!isOwner && !isAdminOrManager) {
+      return res.status(403).json({ success: false, message: 'Not authorized to edit this record.' });
     }
 
     const { activityValue, emissionFactor, carbonEmitted, description, evidenceUrl, transactionDate } = req.body;
 
-    // Re-run auto-calculation if activityValue or factor changes
+    // Check evidence requirement if toggle is active
+    let settings = await Settings.findOne();
+    const requireEvidence = settings ? settings.evidenceRequirement : false;
+    if (requireEvidence && !evidenceUrl && !existing.evidenceUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Evidence upload (URL or file) is required by organization policy.',
+      });
+    }
+
     let computedCarbon = existing.carbonEmitted;
-    const factorId = emissionFactor || existing.emissionFactor.toString();
+    const factorId = emissionFactor || existing.emissionFactor;
     const newActivityValue = activityValue !== undefined ? activityValue : existing.activityValue;
 
-    let settings = await Settings.findOne();
     const autoCalc = settings ? settings.autoEmissionCalc : true;
 
     if (autoCalc && (activityValue !== undefined || emissionFactor)) {
@@ -205,7 +215,7 @@ exports.updateCarbonTransaction = async (req, res) => {
     ]);
 
     // Notify scoring engine
-    await recalculateDepartmentScore(updated.department._id || updated.department);
+    await recalculateDepartmentScore(updated.department._id || updated.department, req.io);
 
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
@@ -227,7 +237,7 @@ exports.deleteCarbonTransaction = async (req, res) => {
     await transaction.deleteOne();
 
     // Notify scoring engine of deletion
-    await recalculateDepartmentScore(deptId);
+    await recalculateDepartmentScore(deptId, req.io);
 
     res.status(200).json({ success: true, message: 'Carbon transaction deleted successfully.' });
   } catch (error) {

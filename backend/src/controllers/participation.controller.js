@@ -119,6 +119,22 @@ exports.approve = async (req, res, next) => {
         'csr_approved',
         `✅ Your CSR activity participation has been approved! +${xpAmount} XP`
       );
+
+      // Recalculate Department Score & emit Socket update
+      try {
+        const User = require('../models/User');
+        const { recalculateDepartmentScore } = require('../services/scoring/scoringEngine');
+        const emp = await User.findById(participation.employee_id);
+        if (emp && emp.department) {
+          const updatedScore = await recalculateDepartmentScore(emp.department);
+          if (req.io) {
+            req.io.emit('SCORE_UPDATED', { department: emp.department, score: updatedScore });
+            req.io.emit('LEADERBOARD_UPDATED', { message: 'Leaderboard scores updated' });
+          }
+        }
+      } catch (scoreErr) {
+        console.error('[SCORE RECALC ERROR]', scoreErr.message);
+      }
     } else {
       // Notify employee of rejection
       await notify(

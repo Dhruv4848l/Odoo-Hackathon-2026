@@ -24,27 +24,27 @@ exports.exportReport = async (req, res) => {
     // Fetch data based on module
     if (reportModule === 'env' || filters.module === 'Environmental') {
       const query = Object.keys(dateQuery).length ? { transactionDate: dateQuery } : {};
-      rawData = await CarbonTransaction.find(query).populate('department', 'name').lean();
+      rawData = await CarbonTransaction.find(query).populate('department', 'name').populate('emissionFactor', 'name unit').lean();
       exportData = rawData.map(d => ({
         Department: d.department?.name || 'Unknown',
         Date: d.transactionDate ? new Date(d.transactionDate).toLocaleDateString() : '',
-        ActivityType: d.activityType,
-        EmissionsCO2e: d.calculatedEmissions,
-        Source: d.source
+        Activity: d.emissionFactor?.name || d.description || 'Carbon Log',
+        ActivityValue: d.activityValue || 0,
+        EmissionsCO2e: Number((d.carbonEmitted || 0).toFixed(2))
       }));
-      columns = ['Department', 'Date', 'ActivityType', 'EmissionsCO2e', 'Source'];
+      columns = ['Department', 'Date', 'Activity', 'ActivityValue', 'EmissionsCO2e'];
     } 
     else if (reportModule === 'social' || filters.module === 'Social') {
       const query = Object.keys(dateQuery).length ? { date: dateQuery } : {};
-      rawData = await CSRActivity.find(query).populate('department', 'name').lean();
+      rawData = await CSRActivity.find(query).populate('department_id', 'name').lean();
       exportData = rawData.map(d => ({
-        Department: d.department?.name || 'Unknown',
+        Department: d.department_id?.name || 'Unknown',
         Title: d.title,
         Date: d.date ? new Date(d.date).toLocaleDateString() : '',
         Status: d.status,
-        Participants: d.participants?.length || 0
+        XPReward: d.xpReward || 0
       }));
-      columns = ['Department', 'Title', 'Date', 'Status', 'Participants'];
+      columns = ['Department', 'Title', 'Date', 'Status', 'XPReward'];
     }
     else if (reportModule === 'governance' || filters.module === 'Governance') {
       const query = Object.keys(dateQuery).length ? { reportedDate: dateQuery } : {};
