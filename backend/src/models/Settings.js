@@ -9,6 +9,12 @@ const SettingsSchema = new mongoose.Schema({
   autoEmissionCalc: { type: Boolean, default: true }, // If true, carbonEmitted = activityValue * factor.factor
   badgeAutoAward: { type: Boolean, default: true },
   complianceOverdueFlag: { type: Boolean, default: true },
+  rewardRedemptionEnabled: { type: Boolean, default: true },
+  notifyNewComplianceIssue: { type: Boolean, default: true },
+  notifyApprovalDecisions: { type: Boolean, default: true },
+  notifyPolicyReminders: { type: Boolean, default: true },
+  notifyBadgeUnlocks: { type: Boolean, default: true },
+  notifyEmailAlerts: { type: Boolean, default: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Settings', SettingsSchema);
