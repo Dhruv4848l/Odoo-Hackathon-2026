@@ -1,19 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const scoreController = require('../controllers/score.controller');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from score' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from score' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in score' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in score' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in score' }),
-};
-
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+router.get('/', scoreController.getDepartmentScores);
+router.post('/recalculate', scoreController.recalculateScore);
 
 module.exports = router;

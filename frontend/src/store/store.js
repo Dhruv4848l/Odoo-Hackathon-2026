@@ -1,14 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
+import scoringReducer from './scoringSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // Other slices will be added here by respective developers:
+    scoring: scoringReducer,
+    // Other slices added by respective developers:
     // environmental: environmentalReducer,
     // social: socialReducer,
     // governance: governanceReducer,
-    // scoring: scoringReducer,
   },
 });
 

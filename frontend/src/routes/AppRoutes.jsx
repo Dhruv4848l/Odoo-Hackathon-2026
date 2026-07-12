@@ -1,49 +1,81 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LoginPage from '../features/auth/LoginPage';
 import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
 
+// Dev D screens
+import OrgDashboard from '../features/reports/OrgDashboard';
+import FixedReports from '../features/reports/FixedReports';
+import CustomReportBuilder from '../features/reports/CustomReportBuilder';
+import SettingsScreen from '../features/admin/SettingsScreen';
+import AppLayout from '../components/layout/AppLayout';
+
 const EnvironmentalDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h2>🔋 Environmental Dashboard</h2>
-    <p>Carbon transactions, emission factor configuration (Dev A)</p>
-  </div>
+  <AppLayout title="Environmental">
+    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
+      🔋 Environmental Dashboard — Dev A module coming soon
+    </div>
+  </AppLayout>
 );
 
 const SocialDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h2>🤝 Social & CSR Dashboard</h2>
-    <p>CSR Activities, challenges, gamification catalog (Dev B)</p>
-  </div>
+  <AppLayout title="Social & CSR">
+    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
+      🤝 Social & CSR Dashboard — Dev B module coming soon
+    </div>
+  </AppLayout>
 );
 
 const GovernanceDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h2>⚖️ Governance & Compliance</h2>
-    <p>Policies, acknowledgements, audits (Dev C)</p>
-  </div>
+  <AppLayout title="Governance">
+    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
+      ⚖️ Governance & Compliance — Dev C module coming soon
+    </div>
+  </AppLayout>
 );
 
-const MainDashboard = () => (
-  <div style={{ padding: '2rem' }}>
-    <h2>📊 Org ESG Dashboard</h2>
-    <p>General overview, combined scores and reports (Dev D)</p>
-  </div>
-);
+// Reports sub-nav wrapper
+const ReportsPage = () => {
+  const tabs = [
+    { to: '/reports/overview', label: 'Fixed Reports' },
+    { to: '/reports/custom', label: 'Custom Builder' },
+  ];
+  return (
+    <div>
+      <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit mb-6 ml-6 mt-4">
+        {tabs.map(({ to, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                isActive ? 'bg-white shadow-sm text-brand-primary' : 'text-gray-500 hover:text-neutral-text'
+              }`
+            }
+          >
+            {label}
+          </NavLink>
+        ))}
+      </div>
+      <Routes>
+        <Route path="overview" element={<FixedReports />} />
+        <Route path="custom" element={<CustomReportBuilder />} />
+        <Route index element={<Navigate to="overview" replace />} />
+      </Routes>
+    </div>
+  );
+};
 
 // Guard Component for Private Routes
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // For testing: bypass check if no user but let's encourage auth
   if (!isAuthenticated) {
-    // Redirect to login if not authenticated
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    // Role not authorized, redirect to general dashboard
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -53,18 +85,20 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Route */}
+      {/* Public */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Private Routes */}
+      {/* Dev D — Org Dashboard */}
       <Route
         path="/dashboard"
         element={
           <PrivateRoute>
-            <MainDashboard />
+            <OrgDashboard />
           </PrivateRoute>
         }
       />
+
+      {/* Dev A — Environmental */}
       <Route
         path="/environmental"
         element={
@@ -73,6 +107,8 @@ export const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+
+      {/* Dev B — Social */}
       <Route
         path="/social"
         element={
@@ -81,6 +117,8 @@ export const AppRoutes = () => {
           </PrivateRoute>
         }
       />
+
+      {/* Dev C — Governance */}
       <Route
         path="/governance"
         element={
@@ -98,7 +136,27 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* Redirect fallback */}
+      {/* Dev D — Reports */}
+      <Route
+        path="/reports/*"
+        element={
+          <PrivateRoute>
+            <ReportsPage />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Dev D — Settings (Admin only) */}
+      <Route
+        path="/settings"
+        element={
+          <PrivateRoute allowedRoles={['Admin']}>
+            <SettingsScreen />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

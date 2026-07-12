@@ -32,6 +32,60 @@ app.use('/uploads', express.static('uploads'));
 // DB connection
 connectDB();
 
+// ── Routes ────────────────────────────────────────────────────────────────────
+// Auth & shared
+const authRoutes        = require('./src/routes/auth.routes');
+const departmentRoutes  = require('./src/routes/department.routes');
+
+// Dev A — Environmental
+const emissionFactorRoutes      = require('./src/routes/emissionFactor.routes');
+const carbonTransactionRoutes   = require('./src/routes/carbonTransaction.routes');
+const environmentalGoalRoutes   = require('./src/routes/environmentalGoal.routes');
+
+// Dev B — Social & Gamification
+const csrActivityRoutes     = require('./src/routes/csrActivity.routes');
+const participationRoutes   = require('./src/routes/participation.routes');
+const challengeRoutes       = require('./src/routes/challenge.routes');
+const badgeRoutes           = require('./src/routes/badge.routes');
+const rewardRoutes          = require('./src/routes/reward.routes');
+const leaderboardRoutes     = require('./src/routes/leaderboard.routes');
+
+// Dev C — Governance & Notifications
+const policyRoutes          = require('./src/routes/policy.routes');
+const acknowledgementRoutes = require('./src/routes/acknowledgement.routes');
+const auditRoutes           = require('./src/routes/audit.routes');
+const complianceIssueRoutes = require('./src/routes/complianceIssue.routes');
+const notificationRoutes    = require('./src/routes/notification.routes');
+
+// Dev D — Scoring, Settings & Reports
+const scoreRoutes    = require('./src/routes/score.routes');
+const settingsRoutes = require('./src/routes/settings.routes');
+const reportRoutes   = require('./src/routes/report.routes');
+
+app.use('/api/auth',               authRoutes);
+app.use('/api/departments',        departmentRoutes);
+app.use('/api/emission-factors',   emissionFactorRoutes);
+app.use('/api/carbon-transactions', carbonTransactionRoutes);
+app.use('/api/environmental-goals', environmentalGoalRoutes);
+app.use('/api/csr-activities',     csrActivityRoutes);
+app.use('/api/participation',      participationRoutes);
+app.use('/api/challenges',         challengeRoutes);
+app.use('/api/badges',             badgeRoutes);
+app.use('/api/rewards',            rewardRoutes);
+app.use('/api/leaderboard',        leaderboardRoutes);
+app.use('/api/policies',           policyRoutes);
+app.use('/api/acknowledgements',   acknowledgementRoutes);
+app.use('/api/audits',             auditRoutes);
+app.use('/api/compliance-issues',  complianceIssueRoutes);
+app.use('/api/notifications',      notificationRoutes);
+// ✅ Dev D routes
+app.use('/api/scores',    scoreRoutes);
+app.use('/api/settings',  settingsRoutes);
+app.use('/api/reports',   reportRoutes);
+
+// Start scheduled jobs (cron)
+require('./src/jobs/cron');
+
 // Basic health check route
 app.use('/api/health', (req, res) => {
   res.status(200).json({

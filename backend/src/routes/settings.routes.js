@@ -1,19 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const settingsController = require('../controllers/settings.controller');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from settings' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from settings' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in settings' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in settings' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in settings' }),
-};
-
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+router.get('/', settingsController.getSettings);
+router.put('/', settingsController.updateSettings);
 
 module.exports = router;
