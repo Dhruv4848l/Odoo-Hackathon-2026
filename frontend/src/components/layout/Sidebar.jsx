@@ -13,12 +13,14 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  Trophy,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Org Dashboard', devOwner: 'D' },
   { to: '/environmental', icon: Leaf, label: 'Environmental', devOwner: 'A' },
   { to: '/social', icon: Users, label: 'Social & CSR', devOwner: 'B' },
+  { to: '/gamification', icon: Trophy, label: 'Gamification', devOwner: 'B' },
   { to: '/governance', icon: ShieldCheck, label: 'Governance', devOwner: 'C' },
   { to: '/reports', icon: FileText, label: 'Reports', devOwner: 'D' },
   { to: '/admin', icon: ShieldCheck, label: 'Admin Console', devOwner: 'A', adminOnly: true },

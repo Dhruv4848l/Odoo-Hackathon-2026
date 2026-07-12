@@ -148,7 +148,7 @@ const CustomReportBuilder = () => {
           </div>
         </div>
 
-        {/* Export Format selector */}
+        {/* Format selector */}
         <div>
           <label className="block text-sm font-medium text-neutral-text mb-1">Export Format</label>
           <div className="flex gap-3">
@@ -176,7 +176,6 @@ const CustomReportBuilder = () => {
           </div>
         </div>
       </div>
-
       {/* Summary preview */}
       <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-4 text-sm text-green-800">
         <p className="font-medium mb-1">Export Preview</p>

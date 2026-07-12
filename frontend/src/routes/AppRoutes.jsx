@@ -23,6 +23,8 @@ import ChallengeBoard from '../features/social/ChallengeBoard';
 import RewardCatalog from '../features/social/RewardCatalog';
 import Leaderboard from '../features/social/Leaderboard';
 import ApprovalQueue from '../features/social/ApprovalQueue';
+import BadgeGallery from '../features/social/BadgeGallery';
+import ChallengeParticipationBoard from '../features/social/ChallengeParticipationBoard';
 
 // Governance (Dev C)
 import PolicyList from '../features/governance/PolicyList';
@@ -45,9 +47,6 @@ const SocialDashboard = () => {
 
   const tabs = [
     { id: 'activities', label: '🤝 CSR Activities', component: <CSRActivityList /> },
-    { id: 'challenges', label: '🏆 Challenges', component: <ChallengeBoard /> },
-    { id: 'rewards', label: '🎁 Reward Catalog', component: <RewardCatalog /> },
-    { id: 'leaderboard', label: '📈 Leaderboard', component: <Leaderboard /> },
   ];
 
   if (user && ['Admin', 'Manager'].includes(user.role)) {
@@ -56,6 +55,48 @@ const SocialDashboard = () => {
 
   return (
     <AppLayout title="Social & CSR">
+      <div className="flex flex-col gap-6">
+        {/* Tab Selector */}
+        {tabs.length > 1 && (
+          <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'bg-brand-primary text-neutral-surface shadow-sm'
+                    : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Tab Content */}
+        <div className="flex-1">
+          {tabs.find((t) => t.id === activeTab)?.component}
+        </div>
+      </div>
+    </AppLayout>
+  );
+};
+
+const GamificationDashboard = () => {
+  const [activeTab, setActiveTab] = useState('challenges');
+
+  const tabs = [
+    { id: 'challenges', label: '🏆 Challenges', component: <ChallengeBoard /> },
+    { id: 'participation', label: '🏃‍♂️ Challenge Participation', component: <ChallengeParticipationBoard /> },
+    { id: 'badges', label: '🏅 Badge Gallery', component: <BadgeGallery /> },
+    { id: 'rewards', label: '🎁 Rewards Catalog', component: <RewardCatalog /> },
+    { id: 'leaderboard', label: '📈 Leaderboard', component: <Leaderboard /> },
+  ];
+
+  return (
+    <AppLayout title="Gamification">
       <div className="flex flex-col gap-6">
         {/* Tab Selector */}
         <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
@@ -197,6 +238,16 @@ export const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
             <SocialDashboard />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Dev B — Gamification (Tabbed view) */}
+      <Route
+        path="/gamification"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee']}>
+            <GamificationDashboard />
           </PrivateRoute>
         }
       />
