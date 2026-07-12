@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const Department = require('../src/models/Department');
 const Category = require('../src/models/Category');
+const User = require('../src/models/User');
 
 const departments = [
   { name: 'Human Resources', code: 'HR', description: 'HR and People Operations' },
@@ -46,6 +47,7 @@ async function seedDatabase() {
     console.log('[SEED] Clearing existing base collections...');
     await Department.deleteMany({});
     await Category.deleteMany({});
+    await User.deleteMany({});
 
     console.log('[SEED] Seeding Departments...');
     const seededDepts = await Department.insertMany(departments);
@@ -54,6 +56,17 @@ async function seedDatabase() {
     console.log('[SEED] Seeding Categories...');
     const seededCategories = await Category.insertMany(categories);
     console.log(`[SEED] Successfully seeded ${seededCategories.length} categories.`);
+
+    console.log('[SEED] Seeding Admin User...');
+    const hrDept = seededDepts.find(d => d.code === 'HR');
+    const adminUser = await User.create({
+      username: 'admin',
+      email: 'admin@gmail.com',
+      password: 'admin@gmail.com', // Will be hashed automatically by user model hooks
+      role: 'Admin',
+      department: hrDept._id,
+    });
+    console.log(`[SEED] Seeded Admin user: ${adminUser.username} (${adminUser.email})`);
 
     console.log('\x1b[32m[SEED] Database seeding complete!\x1b[0m');
     process.exit(0);

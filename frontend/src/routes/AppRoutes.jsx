@@ -1,14 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
-// Stubs/Placeholders for pages. Respective devs will build these.
-const LoginPage = () => (
-  <div style={{ padding: '2rem', textAlign: 'center' }}>
-    <h2>🌿 EcoSphere Login Page</h2>
-    <p>Authentication screen (Dev A)</p>
-  </div>
-);
+import LoginPage from '../features/auth/LoginPage';
+import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
 
 const EnvironmentalDashboard = () => (
   <div style={{ padding: '2rem' }}>
@@ -92,6 +86,14 @@ export const AppRoutes = () => {
         element={
           <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
             <GovernanceDashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute allowedRoles={['Admin']}>
+            <DepartmentCategoryManager />
           </PrivateRoute>
         }
       />

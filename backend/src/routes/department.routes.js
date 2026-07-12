@@ -1,19 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const departmentController = require('../controllers/department.controller');
+const protect = require('../middleware/auth.middleware');
+const authorize = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from department' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from department' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in department' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in department' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in department' }),
-};
+// Public route to fetch departments (for registration and admin view)
+router.get('/', departmentController.getDepartments);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Admin route to create departments
+router.post('/', protect, authorize(['Admin']), departmentController.createDepartment);
 
 module.exports = router;

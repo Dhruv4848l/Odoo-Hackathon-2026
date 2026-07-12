@@ -42,6 +42,11 @@ app.use('/api/health', (req, res) => {
   });
 });
 
+// Mount routes
+app.use('/api/auth', require('./src/routes/auth.routes'));
+app.use('/api/departments', require('./src/routes/department.routes'));
+app.use('/api/categories', require('./src/routes/category.routes'));
+
 // WebSocket Event handler stub
 io.on('connection', (socket) => {
   console.log(`[SOCKET] User connected: ${socket.id}`);
