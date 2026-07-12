@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LoginPage from '../features/auth/LoginPage';
 import DepartmentCategoryManager from '../features/admin/DepartmentCategoryManager';
+import CSRActivityList from '../features/social/CSRActivityList';
+import ChallengeBoard from '../features/social/ChallengeBoard';
+import RewardCatalog from '../features/social/RewardCatalog';
+import Leaderboard from '../features/social/Leaderboard';
+import ApprovalQueue from '../features/social/ApprovalQueue';
 
 // Dev D screens
 import OrgDashboard from '../features/reports/OrgDashboard';
@@ -19,13 +24,49 @@ const EnvironmentalDashboard = () => (
   </AppLayout>
 );
 
-const SocialDashboard = () => (
-  <AppLayout title="Social & CSR">
-    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
-      🤝 Social & CSR Dashboard — Dev B module coming soon
-    </div>
-  </AppLayout>
-);
+const SocialDashboard = () => {
+  const { user } = useSelector((state) => state.auth);
+  const [activeTab, setActiveTab] = useState('activities');
+
+  const tabs = [
+    { id: 'activities', label: '🤝 CSR Activities', component: <CSRActivityList /> },
+    { id: 'challenges', label: '🏆 Challenges', component: <ChallengeBoard /> },
+    { id: 'rewards', label: '🎁 Reward Catalog', component: <RewardCatalog /> },
+    { id: 'leaderboard', label: '📈 Leaderboard', component: <Leaderboard /> },
+  ];
+
+  if (user && ['Admin', 'Manager'].includes(user.role)) {
+    tabs.push({ id: 'approvals', label: '📋 Approval Queue', component: <ApprovalQueue /> });
+  }
+
+  return (
+    <AppLayout title="Social & CSR">
+      <div className="flex flex-col gap-6">
+        {/* Tab Selector */}
+        <div className="bg-white rounded-xl p-2 border border-neutral-border shadow-sm flex gap-2 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'bg-brand-primary text-neutral-surface shadow-sm'
+                  : 'text-neutral-textSecondary hover:text-neutral-text hover:bg-neutral-bg'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="flex-1">
+          {tabs.find((t) => t.id === activeTab)?.component}
+        </div>
+      </div>
+    </AppLayout>
+  );
+};
 
 const GovernanceDashboard = () => (
   <AppLayout title="Governance">
@@ -163,3 +204,4 @@ export const AppRoutes = () => {
 };
 
 export default AppRoutes;
+
