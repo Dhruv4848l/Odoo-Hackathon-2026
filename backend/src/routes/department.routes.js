@@ -9,5 +9,7 @@ router.get('/', departmentController.getDepartments);
 
 // Admin route to create departments
 router.post('/', protect, authorize(['Admin']), departmentController.createDepartment);
+router.put('/:id', protect, authorize(['Admin']), departmentController.updateDepartment);
+router.delete('/:id', protect, authorize(['Admin']), departmentController.deleteDepartment);
 
 module.exports = router;

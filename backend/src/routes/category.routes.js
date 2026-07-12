@@ -9,5 +9,7 @@ router.get('/', categoryController.getCategories);
 
 // Admin route to create categories
 router.post('/', protect, authorize(['Admin']), categoryController.createCategory);
+router.put('/:id', protect, authorize(['Admin']), categoryController.updateCategory);
+router.delete('/:id', protect, authorize(['Admin']), categoryController.deleteCategory);
 
 module.exports = router;
