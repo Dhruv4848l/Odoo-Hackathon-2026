@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const acknowledgementController = require('../controllers/acknowledgement.controller');
+const auth = require('../middleware/auth.middleware');
+const role = require('../middleware/role.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from acknowledgement' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from acknowledgement' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in acknowledgement' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in acknowledgement' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in acknowledgement' }),
-};
+// Employees sign off route
+router.post('/', auth, acknowledgementController.acknowledgePolicy);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Compliance audit / management reports routes
+router.get('/policy/:policyId', auth, role(['Admin', 'Manager', 'Auditor']), acknowledgementController.getAcknowledgementsForPolicy);
+router.get('/rate/:policyId', auth, role(['Admin', 'Manager', 'Auditor']), acknowledgementController.getAcknowledgementRate);
 
 module.exports = router;

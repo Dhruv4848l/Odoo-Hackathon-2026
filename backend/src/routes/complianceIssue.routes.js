@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
+const complianceIssueController = require('../controllers/complianceIssue.controller');
+const auth = require('../middleware/auth.middleware');
+const role = require('../middleware/role.middleware');
+const upload = require('../middleware/upload.middleware');
 
-// Stub controller placeholder
-const controller = {
-  getAll: (req, res) => res.json({ success: true, message: 'GET all from complianceIssue' }),
-  getById: (req, res) => res.json({ success: true, message: 'GET single by id from complianceIssue' }),
-  create: (req, res) => res.json({ success: true, message: 'CREATE in complianceIssue' }),
-  update: (req, res) => res.json({ success: true, message: 'UPDATE in complianceIssue' }),
-  delete: (req, res) => res.json({ success: true, message: 'DELETE in complianceIssue' }),
-};
+// All authenticated users can view compliance lists (e.g. managers tracking dashboard)
+router.get('/', auth, complianceIssueController.getAllIssues);
+router.get('/:id', auth, complianceIssueController.getIssueById);
 
-router.get('/', controller.getAll);
-router.get('/:id', controller.getById);
-router.post('/', controller.create);
-router.put('/:id', controller.update);
-router.delete('/:id', controller.delete);
+// Admin / Auditor / Manager can raise issues and update details
+router.post('/', auth, role(['Admin', 'Manager', 'Auditor']), complianceIssueController.createIssue);
+router.put('/:id', auth, role(['Admin', 'Manager', 'Auditor']), complianceIssueController.updateIssue);
+
+// Resolve issue with upload evidence support (Managers / Admins / Assigned Owners)
+router.put('/:id/resolve', auth, upload.single('evidence'), complianceIssueController.resolveIssue);
 
 module.exports = router;

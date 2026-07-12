@@ -9,12 +9,17 @@ import RewardCatalog from '../features/social/RewardCatalog';
 import Leaderboard from '../features/social/Leaderboard';
 import ApprovalQueue from '../features/social/ApprovalQueue';
 
-// Dev D screens
+// Dev D screens & layout
 import OrgDashboard from '../features/reports/OrgDashboard';
 import FixedReports from '../features/reports/FixedReports';
 import CustomReportBuilder from '../features/reports/CustomReportBuilder';
 import SettingsScreen from '../features/admin/SettingsScreen';
 import AppLayout from '../components/layout/AppLayout';
+
+// Import Governance Features (Dev C)
+import PolicyList from '../features/governance/PolicyList';
+import AcknowledgementTracker from '../features/governance/AcknowledgementTracker';
+import ComplianceKanban from '../features/governance/ComplianceKanban';
 
 const EnvironmentalDashboard = () => (
   <AppLayout title="Environmental">
@@ -68,14 +73,6 @@ const SocialDashboard = () => {
   );
 };
 
-const GovernanceDashboard = () => (
-  <AppLayout title="Governance">
-    <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center text-gray-500">
-      ⚖️ Governance & Compliance — Dev C module coming soon
-    </div>
-  </AppLayout>
-);
-
 // Reports sub-nav wrapper
 const ReportsPage = () => {
   const tabs = [
@@ -126,7 +123,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public */}
+      {/* Public Route */}
       <Route path="/login" element={<LoginPage />} />
 
       {/* Dev D — Org Dashboard */}
@@ -159,20 +156,50 @@ export const AppRoutes = () => {
         }
       />
 
-      {/* Dev C — Governance */}
+      {/* Governance Routes (Dev C) */}
       <Route
-        path="/governance"
+        path="/governance/policies"
         element={
-          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
-            <GovernanceDashboard />
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Employee', 'Auditor']}>
+            <AppLayout title="Compliance Policies">
+              <PolicyList />
+            </AppLayout>
           </PrivateRoute>
         }
       />
       <Route
+        path="/governance/tracker"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
+            <AppLayout title="Acknowledge Tracker">
+              <AcknowledgementTracker />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/governance/kanban"
+        element={
+          <PrivateRoute allowedRoles={['Admin', 'Manager', 'Auditor']}>
+            <AppLayout title="Compliance Kanban">
+              <ComplianceKanban />
+            </AppLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/governance"
+        element={<Navigate to="/governance/policies" replace />}
+      />
+
+      {/* Dev A — Admin Department category manager */}
+      <Route
         path="/admin"
         element={
           <PrivateRoute allowedRoles={['Admin']}>
-            <DepartmentCategoryManager />
+            <AppLayout title="Admin Management">
+              <DepartmentCategoryManager />
+            </AppLayout>
           </PrivateRoute>
         }
       />
@@ -192,7 +219,9 @@ export const AppRoutes = () => {
         path="/settings"
         element={
           <PrivateRoute allowedRoles={['Admin']}>
-            <SettingsScreen />
+            <AppLayout title="Settings">
+              <SettingsScreen />
+            </AppLayout>
           </PrivateRoute>
         }
       />
@@ -204,4 +233,3 @@ export const AppRoutes = () => {
 };
 
 export default AppRoutes;
-
