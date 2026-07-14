@@ -6,9 +6,28 @@
 
 Built with **React 19 · Node.js · Express · MongoDB Atlas · Tailwind CSS 4**
 
-[Getting Started](#-getting-started) · [Features](#-features) · [Architecture](#-architecture) · [API Reference](#-api-reference) · [Tech Stack](#-tech-stack)
+[![Live Demo - Vercel](https://img.shields.io/badge/Live_Demo-Vercel-00C16A?style=for-the-badge&logo=vercel)](https://odoo-hackathon-2026-adrv.vercel.app/)
+[![API Status - Render](https://img.shields.io/badge/Live_API-Render-46E3B7?style=for-the-badge)](https://odoo-hackathon-2026-olkv.onrender.com/api/health)
+
+[🌐 Live Application](https://odoo-hackathon-2026-adrv.vercel.app/) · [Getting Started](#-getting-started) · [Features](#-features) · [Architecture](#-architecture) · [API Reference](#-api-reference) · [Tech Stack](#-tech-stack)
 
 </div>
+
+---
+
+## 🌐 Live Demo & Instant Access
+
+Experience the production deployment of EcoSphere directly in your browser:
+
+- **Live Application URL (Vercel):** [https://odoo-hackathon-2026-adrv.vercel.app/](https://odoo-hackathon-2026-adrv.vercel.app/)
+- **Live Backend API URL (Render):** [https://odoo-hackathon-2026-olkv.onrender.com/api](https://odoo-hackathon-2026-olkv.onrender.com/api)
+
+### Quick Login Credentials
+You can log in and test all platform features immediately using the following administrator credentials:
+
+| Role | Email Address | Password |
+|------|---------------|----------|
+| **Admin** | `admin@gmail.com` | `admin@gmail.com` |
 
 ---
 

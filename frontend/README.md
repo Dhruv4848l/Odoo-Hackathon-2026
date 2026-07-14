@@ -1,16 +1,53 @@
-# React + Vite
+# 🌿 EcoSphere Frontend — Collaborative ESG Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+<div align="center">
 
-Currently, two official plugins are available:
+**Modern, responsive, and rich UI built for the Odoo Hackathon 2026 ESG Management Platform.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-00C16A?style=for-the-badge&logo=vercel)](https://odoo-hackathon-2026-adrv.vercel.app/)
+[![Backend API](https://img.shields.io/badge/Backend_API-Render-46E3B7?style=for-the-badge)](https://odoo-hackathon-2026-olkv.onrender.com/api)
 
-## React Compiler
+[🌐 Live Demo](https://odoo-hackathon-2026-adrv.vercel.app/) • [Main Project README](../README.md)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+</div>
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🔗 Live Application
+
+- **Live Production App:** [https://odoo-hackathon-2026-adrv.vercel.app/](https://odoo-hackathon-2026-adrv.vercel.app/)
+- **Production Backend API:** [https://odoo-hackathon-2026-olkv.onrender.com/api](https://odoo-hackathon-2026-olkv.onrender.com/api)
+
+### Quick Test Credentials
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@gmail.com` | `admin@gmail.com` |
+
+---
+
+## 📖 Project Description
+
+This is the frontend single-page application (SPA) for **EcoSphere**, an enterprise-grade Environmental, Social, and Governance (ESG) collaboration platform. It offers rich interactive dashboards, real-time metrics, Kanban workflow tracking, carbon accounting calculators, and gamified sustainability challenges.
+
+### Tech Stack
+- **Framework:** React 19 + Vite
+- **Styling:** Tailwind CSS 4 + Custom Glassmorphism UI
+- **State Management:** Redux Toolkit
+- **Routing:** React Router DOM v7
+- **Charts & Visualizations:** Recharts
+- **Real-time Updates:** Socket.io Client
+- **HTTP Client:** Axios with JWT authentication interceptors
+
+---
+
+## 🛠️ Local Development Setup
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start local development server
+npm run dev
+```
+
+By default, the local frontend runs on `http://localhost:5173` and automatically connects to your live Render API in production or `http://localhost:5000/api` during local development.
